@@ -2,6 +2,8 @@ require "allure-cucumber/version"
 require 'allure-cucumber/dsl'
 require 'allure-cucumber/builder'
 require 'allure-cucumber/formatter'
+require 'allure-cucumber/feature_tracker'
+
 
 module AllureCucumber
 
@@ -22,6 +24,6 @@ module AllureCucumber
     def configure(&block)
       yield Config
     end
-  end
-  
+   end
+
 end

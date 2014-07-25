@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "allure-cucumber-#{AllureCucumber::Version::STRING}"
   spec.description   = %q{Adaptor to use Allure framework with cucumber}
   spec.homepage      = ""
-  spec.license       = "Apache2"
+  spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
@@ -23,4 +23,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.5"
   spec.add_development_dependency "rake"
+
 end

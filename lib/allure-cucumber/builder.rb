@@ -1,4 +1,5 @@
 require 'rexml/text'
+require 'nokogiri'
 
 module AllureCucumber
 
@@ -6,36 +7,36 @@ module AllureCucumber
     class << self
       attr_accessor :suites
       MUTEX = Mutex.new
-
+      
       def init_suites
         MUTEX.synchronize {
           self.suites ||= {}
         }
       end
-
+      
       def start_suite(title)
         init_suites
         MUTEX.synchronize do
-          puts "Starting suite #{title}"
+          puts "Starting suite : #{title}"
           self.suites[title] = {
-              :title => title,
-              :start => timestamp,
-              :tests => {},
-          }
+                                :title => title,
+                                :start => timestamp,
+                                :tests => {},
+                               }
         end
       end
 
       def start_test(suite, test, severity = :normal)
         MUTEX.synchronize do
-          puts "Starting test #{suite}.#{test}"
+          puts "Starting test : #{test}"
           self.suites[suite][:tests][test] = {
-              :title => test,
-              :start => timestamp,
-              :severity => severity,
-              :failure => nil,
-              :steps => {},
-              :attachments => []
-          }
+                                              :title => test,
+                                              :start => timestamp,
+                                              :severity => severity,
+                                              :failure => nil,
+                                              :steps => {},
+                                              :attachments => []
+                                             }
         end
       end
 
@@ -46,28 +47,27 @@ module AllureCucumber
           end
         end
         MUTEX.synchronize do
-          puts "Stopping test #{suite}.#{test}"
+          puts "Stopping test : #{test}"
           self.suites[suite][:tests][test][:stop] = timestamp(result[:finished_at])
           self.suites[suite][:tests][test][:start] = timestamp(result[:started_at])
           self.suites[suite][:tests][test][:status] = result[:status]
           if (result[:status].to_sym != :passed)
             self.suites[suite][:tests][test][:failure] = {
-                :stacktrace => escape((result[:caller] || []).map { |s| s.to_s }.join("\r\n")),
-                :message => escape(result[:exception].to_s),
-            }
+                                                          :stacktrace => escape((result[:caller] || []).map { |s| s.to_s }.join("\r\n")),
+                                                          :message => escape(result[:exception].to_s),
+                                                         } 
           end
 
         end
       end
 
       def escape(text)
-        #REXML::Text.new(text, false, nil, false)
         text
       end
 
- def start_step(suite, test, step, time = nil, severity = :normal)
+      def start_step(suite, test, step, time = nil, severity = :normal)
         MUTEX.synchronize do
-          puts "Starting step #{suite}.#{test}.#{step}"
+          puts "Starting step : #{step}"
           self.suites[suite][:tests][test][:steps][step] = {
                                                             :title => step,
                                                             :start => timestamp(time),
@@ -79,11 +79,11 @@ module AllureCucumber
 
       def add_attachment(suite, test, attachment, step = nil)
         attach = {
-            :title => attachment[:title],
-            :source => attachment[:source],
-            :type => attachment[:type],
-            :size => attachment[:size],
-        }
+                  :title => attachment[:title],
+                  :source => attachment[:source],
+                  :type => attachment[:type],
+                  :size => attachment[:size],
+                 }
         if step.nil?
           self.suites[suite][:tests][test][:attachments] << attach
         else
@@ -93,7 +93,7 @@ module AllureCucumber
 
       def stop_step(suite, test, step, status = :passed, time = nil)
         MUTEX.synchronize do
-          puts "Stopping step #{suite}.#{test}.#{step}"
+          puts "Stopping step : #{step}"
           self.suites[suite][:tests][test][:steps][step][:stop] = timestamp(time)
           self.suites[suite][:tests][test][:steps][step][:status] = status
         end
@@ -102,7 +102,7 @@ module AllureCucumber
       def stop_suite(title)
         init_suites
         MUTEX.synchronize do
-          puts "Stopping suite #{title}"
+          puts "Stopping suite : #{title}"
           self.suites[title][:stop] = timestamp
         end
       end
