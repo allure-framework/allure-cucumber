@@ -21,15 +21,15 @@ Or install it yourself as:
 
 Use `--format AllureCucumber::Formatter` while running cucumber or add it to `cucumber.yml`
 
-By default, allure artifacts are stored in `/allure/data`. To change this set `AllureCucumber::Config.output_dir = directory-for-allure-xml` in your `env.rb` file.
+By default, allure artifacts are stored in `/allure/data`. To change this set `AllureCucumber::Config.output_dir` in your `env.rb` file.
 
 You can attach files to steps 
 
-	```ruby
+```ruby
 	# file: features/support/env.rb
 
 	include AllureCucumber::DSL
 
 	attach_file(title, file)
-	```
+```
 
