@@ -5,6 +5,8 @@ require 'allure-ruby-api'
 module AllureCucumber
   class Formatter
 
+    include AllureCucumber::DSL
+
     def initialize(step_mother, io, options)
       dir = Pathname.new(AllureCucumber::Config.output_dir)      
       FileUtils.rm_rf(dir)
@@ -81,6 +83,11 @@ module AllureCucumber
       return if @in_background || @scenario_outline
       result = { status: steps.status, exception: steps.exception }
       AllureRubyApi::Builder.stop_test(@tracker.feature_name, @tracker.scenario_name, result)
+    end
+
+    def before_examples(*args)
+      @header_row = true
+      @in_examples = true
     end
 
     def before_examples(*args)
