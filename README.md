@@ -1,6 +1,7 @@
-# Allure::Cucumber
+# AllureCucumber
 
-Allure adaptor for [cucumber](http://cukes.info/)
+Allure adaptor for [cucumber](http://cukes.info/). This borrows code heavily from [allure-rspec](https://github.com/allure-framework/allure-rspec) gem.
+This is an experimental gem and very much a work in progress.
 
 ## Installation
 
@@ -20,18 +21,15 @@ Or install it yourself as:
 
 Use `--format AllureCucumber::Formatter` while running cucumber or add it to `cucumber.yml`
 
-## Issues
+By default, allure artifacts are stored in `/allure/data`. To change this set `AllureCucumber::Config.output_dir` in your `env.rb` file.
 
-- Duration of steps for scenario oultine
+You can attach files to steps 
 
-## TODOs
+```ruby
+	# file: features/support/env.rb
 
-- Show tags in the report
+	include AllureCucumber::DSL
 
-## Contributing
+	attach_file(title, file)
+```
 
-1. Fork it ( http://github.com/9ikhan/allure-cucumber/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
