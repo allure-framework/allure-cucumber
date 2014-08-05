@@ -10,9 +10,6 @@ module AllureCucumber
     def initialize(step_mother, io, options)
       dir = Pathname.new(AllureCucumber::Config.output_dir)      
       FileUtils.rm_rf(dir)
-      AllureRubyApi.configure do |c|
-        c.output_dir = dir
-      end
       @tracker = AllureCucumber::FeatureTracker.create
     end
     
