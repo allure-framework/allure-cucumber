@@ -1,8 +1,6 @@
 require 'pathname'
 require 'uuid'
-require 'allure-ruby-api'
-require 'dsl'
-require 'feature_tracker'
+require 'allure-ruby-adaptor-api'
 
 module AllureCucumber
   class Formatter
