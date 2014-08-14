@@ -1,8 +1,8 @@
-require 'allure-ruby-api'
+require 'allure-ruby-adaptor-api'
 require 'allure-cucumber/version'
-require 'allure-cucumber/formatter'
 require 'allure-cucumber/feature_tracker'
 require 'allure-cucumber/dsl'
+require 'allure-cucumber/formatter'
 
 module AllureCucumber
   
