@@ -22,7 +22,7 @@ module AllureCucumber
   class << self
     def configure(&block)
       yield Config
-      AllureRubyApi.configure do |c|
+      AllureRubyAdaptorApi.configure do |c|
         c.output_dir = Config.output_dir
       end
     end

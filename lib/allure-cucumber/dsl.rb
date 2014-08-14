@@ -3,7 +3,7 @@ module AllureCucumber
 
     def attach_file(title, file)
       @tracker = AllureCucumber::FeatureTracker.tracker
-      AllureRubyApi::Builder.add_attachment(@tracker.feature_name, @tracker.scenario_name, :step => @tracker.step_name, :file => file, :title => title)
+      AllureRubyAdaptorApi::Builder.add_attachment(@tracker.feature_name, @tracker.scenario_name, :step => @tracker.step_name, :file => file, :title => title)
     end
 
   end
