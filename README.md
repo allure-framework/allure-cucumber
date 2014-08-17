@@ -1,6 +1,6 @@
-# AllureCucumber
+# Allure Cucumber Adaptor
 
-Allure adaptor for [cucumber](http://cukes.info/). This is an experimental gem and very much a work in progress.
+This repository contains Allure adaptor for [Cucumber](http://cukes.info/) framework.
 
 ## Installation
 
@@ -20,7 +20,7 @@ Or install it yourself as:
 
 Use `--format AllureCucumber::Formatter` while running cucumber or add it to `cucumber.yml`
 
-By default, allure artifacts are stored in `/allure/data`. To change this set `AllureCucumber::Config.output_dir` in your `env.rb` file.
+By default, Allure artifacts are stored in `/allure/data`. To change this set `AllureCucumber::Config.output_dir` in your `env.rb` file.
 
 You can also attach screenshots, logs or test data to steps 
 
@@ -29,6 +29,6 @@ You can also attach screenshots, logs or test data to steps
 
 	include AllureCucumber::DSL
 
-	 attach_file(title, file)
+	attach_file(title, file)
 ```
 
