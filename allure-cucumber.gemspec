@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.email         = ["9ikhan@gmail.com"]
   spec.summary       = "allure-cucumber-#{AllureCucumber::Version::STRING}"
   spec.description   = %q{Adaptor to use Allure framework with cucumber}
-  spec.homepage      = ""
-  spec.license       = "MIT"
+  spec.homepage      = "http://allure.qatools.ru"
+  spec.license       = "Apache2"
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
