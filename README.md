@@ -49,3 +49,5 @@ include AllureCucumber::DSL
 attach_file(title, file)
 ```
 
+## How to generate report
+This adapter only generates XML files containing information about tests. See [wiki section](https://github.com/allure-framework/allure-core/wiki#generating-report) on how to generate report.
