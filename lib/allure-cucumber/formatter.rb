@@ -15,7 +15,7 @@ module AllureCucumber
     
     def before_feature(feature)
       @has_background = false
-      @tracker.feature_name =  feature.name.gsub!(/\n/, " ")
+      @tracker.feature_name =  feature.name.gsub(/\n/, " ")
       AllureRubyAdaptorApi::Builder.start_suite(@tracker.feature_name, :severity => :normal)
     end
 
