@@ -38,6 +38,7 @@ module AllureCucumber
       unless @scenario_outline
         @tracker.scenario_name = (name.nil? || name == "") ? "Unnamed scenario" : name.split("\n")[0]
         AllureRubyAdaptorApi::Builder.start_test(@tracker.feature_name, @tracker.scenario_name, :feature => @tracker.feature_name, :story => @tracker.scenario_name)
+        @tracker.scenario_started_at = Time.now
         post_background_steps if  @has_background
       else
         @scenario_outline_name = (name.nil? || name == "") ? "Unnamed scenario" : name.split("\n")[0]
@@ -78,7 +79,7 @@ module AllureCucumber
     
     def after_steps(steps)
       return if @in_background || @scenario_outline
-      result = { status: steps.status, exception: steps.exception }
+      result = { :status => steps.status, :exception => steps.exception, :started_at => @tracker.scenario_started_at, :finished_at => Time.now }
       AllureRubyAdaptorApi::Builder.stop_test(@tracker.feature_name, @tracker.scenario_name, result)
     end
 
@@ -113,6 +114,7 @@ module AllureCucumber
         @exception = nil
         @tracker.scenario_name = "#{@scenario_outline_name} Example: #{table_row.name}"
         AllureRubyAdaptorApi::Builder.start_test(@tracker.feature_name, @tracker.scenario_name, :feature => @tracker.feature_name, :story => @tracker.scenario_name)
+        @tracker.scenario_started_at = Time.now
         post_background_steps if @has_background
         @current_row += 1
         @example_before_steps.each do |step| 
@@ -134,7 +136,7 @@ module AllureCucumber
           end      
           AllureRubyAdaptorApi::Builder.stop_step(@tracker.feature_name, @tracker.scenario_name, @tracker.step_name, step.status.to_sym)
         end
-        AllureRubyAdaptorApi::Builder.stop_test(@tracker.feature_name, @tracker.scenario_name, {:status => @scenario_status, :exception => @exception})
+        AllureRubyAdaptorApi::Builder.stop_test(@tracker.feature_name, @tracker.scenario_name, {:status => @scenario_status, :exception => @exception, :started_at => @tracker.scenario_started_at, :finished_at => Time.now })
       end
       @header_row = false if @header_row
     end
