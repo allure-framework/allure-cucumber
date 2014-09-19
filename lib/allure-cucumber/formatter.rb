@@ -10,12 +10,13 @@ module AllureCucumber
     def initialize(step_mother, io, options)
       dir = Pathname.new(AllureCucumber::Config.output_dir)      
       FileUtils.rm_rf(dir)
-      @tracker = AllureCucumber::FeatureTracker.create
+      @tracker = AllureCucumber::FeatureTracker.instance
     end
     
     def before_feature(feature)
       @has_background = false
       @tracker.feature_name =  feature.name.gsub(/\n/, " ")
+      @tracker[@tracker.feature_name] = {:started_at => Time.now}
       AllureRubyAdaptorApi::Builder.start_suite(@tracker.feature_name, :severity => :normal)
     end
 
@@ -78,8 +79,9 @@ module AllureCucumber
     
     def after_steps(steps)
       return if @in_background || @scenario_outline
-      result = { status: steps.status, exception: steps.exception }
-      AllureRubyAdaptorApi::Builder.stop_test(@tracker.feature_name, @tracker.scenario_name, result)
+      feature = @tracker.feature_name
+      result = { :status => steps.status, :exception => steps.exception, :started_at => @tracker[feature][:started_at] }
+      AllureRubyAdaptorApi::Builder.stop_test(feature, @tracker.scenario_name, result)
     end
 
     def before_examples(*args)

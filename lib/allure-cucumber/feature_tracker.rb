@@ -1,19 +1,17 @@
 module AllureCucumber
-  
+
   class FeatureTracker
+    include Singleton
+    attr_accessor :feature_name, :scenario_name, :step_name
 
-    attr_accessor :feature_name, :scenario_name, :step_name  
-    @@tracker = nil
-
-    def self.create
-      @@tracker = FeatureTracker.new unless @@tracker
-      private_class_method :new
-      @@tracker
+    def [](feature_name)
+      @feature_meta ||= {}
+      @feature_meta[feature_name]
     end
 
-    def self.tracker
-      @@tracker
+    def []=(feature_name, value)
+      @feature_meta ||= {}
+      @feature_meta[feature_name] = value
     end
-    
   end
 end
