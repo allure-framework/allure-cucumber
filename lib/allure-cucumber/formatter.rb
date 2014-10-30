@@ -36,12 +36,12 @@ module AllureCucumber
 
     def scenario_name(keyword, name, file_colon_line, source_indent)
       unless @scenario_outline
-        @tracker.scenario_name = (name.nil? || name == "") ? "Unnamed scenario" : name.split("\n")[0]
+        @tracker.scenario_name = (name.nil? || name == "") ? "Unnamed scenario" : name.gsub(/\n/, " ")
         AllureRubyAdaptorApi::Builder.start_test(@tracker.feature_name, @tracker.scenario_name, :feature => @tracker.feature_name, :story => @tracker.scenario_name)
         @tracker.scenario_started_at = Time.now
         post_background_steps if  @has_background
       else
-        @scenario_outline_name = (name.nil? || name == "") ? "Unnamed scenario" : name.split("\n")[0]
+        @scenario_outline_name = (name.nil? || name == "") ? "Unnamed scenario" : name.gsub(/\n/, " ")
       end      
     end
     
