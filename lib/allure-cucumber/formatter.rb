@@ -15,7 +15,8 @@ module AllureCucumber
     
     def before_feature(feature)
       @has_background = false
-      @tracker.feature_name =  feature.name.gsub(/\n/, " ")
+      feature_identifier = ENV['FEATURE_IDENTIFIER'] && "#{ENV['FEATURE_IDENTIFIER']} - "
+      @tracker.feature_name = "#{feature_identifier}#{feature.name.gsub(/\n/, " ")}"
       AllureRubyAdaptorApi::Builder.start_suite(@tracker.feature_name, :severity => :normal)
     end
 
@@ -66,7 +67,7 @@ module AllureCucumber
     end
 
     def after_step(step)
-      unless step.background? 
+      unless step.background?
         unless @scenario_outline
          AllureRubyAdaptorApi::Builder.stop_step(@tracker.feature_name, @tracker.scenario_name, @tracker.step_name, step.status.to_sym)
         else
