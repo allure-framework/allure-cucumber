@@ -32,7 +32,7 @@ module AllureCucumber
     end
 
     def before_feature_element(feature_element)
-      @scenario_outline = feature_element.instance_of?(Cucumber::Ast::ScenarioOutline) 
+      @scenario_outline = feature_element.instance_of?(Cucumber::Core::Ast::ScenarioOutline) 
     end
 
     def scenario_name(keyword, name, file_colon_line, source_indent)
@@ -53,7 +53,7 @@ module AllureCucumber
     end
 
     def before_step(step)
-      unless step.background?
+      if step.background.nil?
         unless @scenario_outline
           @tracker.step_name = step.name
           AllureRubyAdaptorApi::Builder.start_step(@tracker.feature_name, @tracker.scenario_name, @tracker.step_name) 
@@ -67,7 +67,7 @@ module AllureCucumber
     end
 
     def after_step(step)
-      unless step.background?
+      if step.background.nil?
         unless @scenario_outline
          AllureRubyAdaptorApi::Builder.stop_step(@tracker.feature_name, @tracker.scenario_name, @tracker.step_name, step.status.to_sym)
         else
@@ -127,7 +127,7 @@ module AllureCucumber
     end
     
     def after_table_row(table_row)
-      return unless @in_examples or Cucumber::Ast::OutlineTable::ExampleRow === table_row
+      return unless @in_examples or Cucumber::Formatter::LegacyApi::Ast::ExampleTableRow === table_row
       unless @header_row
         @example_after_steps.each do |step| 
           @tracker.step_name = transform_step_name_for_outline(step.name, @current_row)
