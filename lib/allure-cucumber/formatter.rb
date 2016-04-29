@@ -61,6 +61,10 @@ module AllureCucumber
       stop_test(@result)
     end
     
+   def after_feature_element(feature_element)
+      after_scenario(feature_element)
+    end
+    
     # Start the test for scenario examples
     def before_table_row(table_row)
       if @scenario_outline && !@header_row && !@in_multiline_arg
