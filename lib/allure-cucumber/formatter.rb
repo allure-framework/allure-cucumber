@@ -143,9 +143,9 @@ module AllureCucumber
     def cucumber_status_to_allure_status(status)
       case status.to_s
       when "undefined"
-        return "failed"
+        return "broken"
       when "skipped"
-        return "pending"
+        return "canceled"
       else
         return status.to_s
       end
