@@ -51,10 +51,18 @@ module AllureCucumber
     
     # Stop the test for normal scenarios
     def after_steps(steps)
-      if !@scenario_outline 
-        result = test_result(steps)
-        stop_test(result)
+      if !@scenario_outline
+        @result = test_result(steps)
       end
+    end
+    
+   def after_scenario(scenario)
+      @result[:status] = cucumber_status_to_allure_status(scenario.status)
+      stop_test(@result)
+    end
+    
+   def after_feature_element(feature_element)
+      after_scenario(feature_element)
     end
     
     # Start the test for scenario examples
@@ -143,9 +151,9 @@ module AllureCucumber
     def cucumber_status_to_allure_status(status)
       case status.to_s
       when "undefined"
-        return "failed"
+        return "broken"
       when "skipped"
-        return "pending"
+        return "canceled"
       else
         return status.to_s
       end
