@@ -51,10 +51,14 @@ module AllureCucumber
     
     # Stop the test for normal scenarios
     def after_steps(steps)
-      if !@scenario_outline 
-        result = test_result(steps)
-        stop_test(result)
+      if !@scenario_outline
+        @result = test_result(steps)
       end
+    end
+    
+   def after_scenario(scenario)
+      @result[:status] = cucumber_status_to_allure_status(scenario.status)
+      stop_test(@result)
     end
     
     # Start the test for scenario examples
