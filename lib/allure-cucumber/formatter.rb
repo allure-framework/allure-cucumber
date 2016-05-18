@@ -12,8 +12,8 @@ module AllureCucumber
     POSSIBLE_STATUSES = ['passed', 'failed', 'pending', 'skipped', 'undefined']
     
     def initialize(step_mother, io, options)
-      dir = Pathname.new(AllureCucumber::Config.output_dir)      
-      FileUtils.rm_rf(dir)
+      dir = Pathname.new(AllureCucumber::Config.output_dir)
+      FileUtils.rm_rf(dir) unless AllureCucumber::Config.clean_dir == false
       FileUtils.mkdir_p(dir)
       @tracker = AllureCucumber::FeatureTracker.create
       @deferred_before_test_steps = []
