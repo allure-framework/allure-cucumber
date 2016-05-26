@@ -139,15 +139,15 @@ module AllureCucumber
         return {:status => status}
       end
     end
-    
+
     def cucumber_status_to_allure_status(status)
       case status.to_s
-      when "undefined"
-        return "failed"
-      when "skipped"
-        return "pending"
-      else
-        return status.to_s
+        when "undefined"
+          return "broken"
+        when "skipped"
+          return "canceled"
+        else
+          return status.to_s
       end
     end
     
