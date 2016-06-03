@@ -29,6 +29,14 @@ AllureCucumber.configure do |c|
 end
 ```
 
+By default, the Allure XML files from earlier runs are deleted at the start of new run. This can be disabled by:
+
+```ruby
+AllureCucumber.configure do |c|
+  c.clean_dir  = false
+end
+```
+
 ## Usage
 
 Put the following in your `features/support/env.rb` file:
