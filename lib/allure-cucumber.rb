@@ -8,7 +8,7 @@ module AllureCucumber
   
   module Config
     class << self
-      attr_accessor :output_dir
+      attr_accessor :output_dir, :clean_dir
       
       DEFAULT_OUTPUT_DIR = 'gen/allure-results'
       
