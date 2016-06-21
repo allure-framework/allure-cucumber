@@ -8,9 +8,9 @@ module AllureCucumber
     include AllureCucumber::DSL
     
     TEST_HOOK_NAMES_TO_IGNORE = ['Before hook', 'After hook']
-
+    ALLOWED_SEVERITIES = ['blocker', 'critical', 'normal', 'minor', 'trivial']
     POSSIBLE_STATUSES = ['passed', 'failed', 'pending', 'skipped', 'undefined']
-    
+
     def initialize(step_mother, io, options)
       dir = Pathname.new(AllureCucumber::Config.output_dir)
       FileUtils.rm_rf(dir) unless AllureCucumber::Config.clean_dir == false
@@ -18,6 +18,7 @@ module AllureCucumber
       @tracker = AllureCucumber::FeatureTracker.create
       @deferred_before_test_steps = []
       @deferred_after_test_steps = []
+      @scenario_tags = {}
     end
     
     # Start the test suite
@@ -35,6 +36,23 @@ module AllureCucumber
     def scenario_name(keyword, name, *args)
       scenario_name = (name.nil? || name == "") ? "Unnamed scenario" : name.gsub(/\n/, " ")
       @scenario_outline ? @scenario_outline_name = scenario_name : @tracker.scenario_name = scenario_name 
+    end
+
+    # Analyze Cucumber Scenario Tags
+    def after_tags(tags)
+      tags.each do |tag|
+        if AllureCucumber::Config.tms_prefix && tag.name.include?(AllureCucumber::Config.tms_prefix)
+          @scenario_tags[:testId] = remove_tag_prefix(tag.name, AllureCucumber::Config.tms_prefix)
+        end
+
+        if tag.name.include?(AllureCucumber::Config.issue_prefix)
+          @scenario_tags[:issue] = remove_tag_prefix(tag.name, AllureCucumber::Config.issue_prefix)
+        end
+
+        if tag.name.include?(AllureCucumber::Config.severity_prefix) && ALLOWED_SEVERITIES.include?(trim_tag(tag.name, AllureCucumber::Config.severity_prefix))
+          @scenario_tags[:severity] = remove_tag_prefix(tag.name, AllureCucumber::Config.severity_prefix).downcase.to_sym
+        end
+      end
     end
 
     def before_examples(*args)
@@ -124,6 +142,10 @@ module AllureCucumber
     
     private
 
+    def remove_tag_prefix(tag, prefix)
+      tag.gsub(prefix,'')
+    end
+    
     def step_status(result)
       POSSIBLE_STATUSES.each do |status|
         return cucumber_status_to_allure_status(status) if result.send("#{status}?")
@@ -160,7 +182,9 @@ module AllureCucumber
 
     def start_test
       if @tracker.scenario_name
-        AllureRubyAdaptorApi::Builder.start_test(@tracker.feature_name, @tracker.scenario_name, :feature => @tracker.feature_name, :story => @tracker.scenario_name)
+        @scenario_tags[:feature] = @tracker.feature_name
+        @scenario_tags[:story]   = @tracker.scenario_name
+        AllureRubyAdaptorApi::Builder.start_test(@tracker.feature_name, @tracker.scenario_name, @scenario_tags)
         post_deferred_steps
       end
     end
@@ -187,6 +211,7 @@ module AllureCucumber
         @tracker.scenario_name = nil
         @deferred_before_test_steps = []
         @deferred_after_test_steps = []
+        @scenario_tags = {}
       end
     end
     
