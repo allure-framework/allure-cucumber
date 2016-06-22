@@ -37,6 +37,41 @@ AllureCucumber.configure do |c|
 end
 ```
 
+By default, allure-cucumber will analyze your cucumber tags looking for Test Management, Issue Management, and Severity hooks. These hooks will be displayed in the generated allure report (see allure-core for further info). 
+
+```ruby    
+    DEFAULT_TMS_PREFIX      = '@TMS:'
+    DEFAULT_ISSUE_PREFIX    = '@ISSUE:'
+    DEFAULT_SEVERITY_PREFIX = '@SEVERITY:'
+```
+
+Example: 
+```gherkin
+  @SEVERITY:trivial @ISSUE:YZZ-100 @TMS:9901
+  Scenario: Leave First Name Blank
+    When I register an account without a first name
+    Then exactly (1) [validation_error] should be visible
+```    
+
+You can configure what allure-cucumber looks for by making the following changes
+
+```ruby
+AllureCucumber.configure do |c|
+  c.clean_dir  = false
+  c.tms_prefix      = '@HIPTEST--'
+  c.issue_prefix    = '@JIRA++'
+  c.severity_prefix = '@URGENCY:'
+end
+```
+
+Example: 
+```gherkin
+  @URGENCY:critical @JIRA++YZZ-100 @HIPTEST--9901
+  Scenario: Leave First Name Blank
+    When I register an account without a first name
+    Then exactly (1) [validation_error] should be visible
+```    
+
 ## Usage
 
 Put the following in your `features/support/env.rb` file:
