@@ -49,7 +49,7 @@ module AllureCucumber
           @scenario_tags[:issue] = remove_tag_prefix(tag.name, AllureCucumber::Config.issue_prefix)
         end
 
-        if tag.name.include?(AllureCucumber::Config.severity_prefix) && ALLOWED_SEVERITIES.include?(trim_tag(tag.name, AllureCucumber::Config.severity_prefix))
+        if tag.name.include?(AllureCucumber::Config.severity_prefix) && ALLOWED_SEVERITIES.include?(remove_tag_prefix(tag.name, AllureCucumber::Config.severity_prefix))
           @scenario_tags[:severity] = remove_tag_prefix(tag.name, AllureCucumber::Config.severity_prefix).downcase.to_sym
         end
       end
