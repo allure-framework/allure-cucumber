@@ -59,22 +59,34 @@ module AllureCucumber
       @header_row = true
       @row_count = 0
     end
-    
+
+    def before_scenario(scenario)
+      # not used now, but keeping for later.
+    end
+
     # Start the test for normal scenarios
     def before_steps(steps)
       if !@scenario_outline  
         start_test
       end
     end
-    
+
     # Stop the test for normal scenarios
     def after_steps(steps)
-      if !@scenario_outline 
-        result = test_result(steps)
-        stop_test(result)
+      if !@scenario_outline
+        @result = test_result(steps)
       end
     end
-    
+
+    def after_scenario(scenario)
+      @result[:status] = cucumber_status_to_allure_status(scenario.status)
+      stop_test(@result)
+    end
+
+    def after_feature_element(feature_element)
+      after_scenario(feature_element)
+    end
+
     # Start the test for scenario examples
     def before_table_row(table_row)
       if @scenario_outline && !@header_row && !@in_multiline_arg
@@ -107,7 +119,11 @@ module AllureCucumber
     end
     
     def after_test_step(test_step, result)
-      if !TEST_HOOK_NAMES_TO_IGNORE.include?(test_step.name) 
+      if test_step.name == 'Before hook'
+        if (!@before_hook_exception) && result.methods.include?(:exception)
+          @before_hook_exception = result.exception
+        end
+      elsif test_step.name != 'After hook'
         if @tracker.scenario_name
           status = step_status(result)
           stop_step(status)
@@ -154,7 +170,11 @@ module AllureCucumber
     
     def test_result(result)
       status = cucumber_status_to_allure_status(result.status)
-      exception = status == 'failed' && result.exception.nil? ? Exception.new("Some steps were undefined") : result.exception
+      if @before_hook_exception
+        exception = @before_hook_exception
+      else
+        exception = status == 'failed' && result.exception.nil? ? Exception.new("Some steps were undefined") : result.exception
+      end
       if exception 
         return {:status => status, :exception => exception}
       else
