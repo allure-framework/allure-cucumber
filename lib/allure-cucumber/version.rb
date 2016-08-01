@@ -1,5 +1,5 @@
 module AllureCucumber  
   module Version 
-    STRING = '0.5.5'
+    STRING = '0.5.6'
   end
 end
