@@ -11,7 +11,8 @@ module AllureCucumber
     ALLOWED_SEVERITIES = ['blocker', 'critical', 'normal', 'minor', 'trivial']
     POSSIBLE_STATUSES = ['passed', 'failed', 'pending', 'skipped', 'undefined']
 
-    def initialize(step_mother, io, options)
+    def initialize(step_mother, path_or_io, options)
+      AllureCucumber::Config.output_dir = path_or_io if path_or_io.is_a?(String)
       dir = Pathname.new(AllureCucumber::Config.output_dir)
       FileUtils.rm_rf(dir) unless AllureCucumber::Config.clean_dir == false
       FileUtils.mkdir_p(dir)
