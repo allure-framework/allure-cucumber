@@ -100,8 +100,8 @@ module AllureCucumber
     def after_table_row(table_row)
       unless @multiline_arg
         if @scenario_outline && !@header_row 
-          result = test_result(table_row)
-          stop_test(result)
+          @result = test_result(table_row)
+          stop_test(@result)
         end
         @header_row = false
       end
