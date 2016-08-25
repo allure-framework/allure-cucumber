@@ -232,6 +232,7 @@ module AllureCucumber
         @deferred_before_test_steps = []
         @deferred_after_test_steps = []
         @scenario_tags = {}
+        @before_hook_exception = nil
       end
     end
     
