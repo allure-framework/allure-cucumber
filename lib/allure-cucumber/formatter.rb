@@ -57,7 +57,6 @@ module AllureCucumber
 
     def before_examples(*args)
       @header_row = true
-      @row_count = 0
     end
 
     def before_scenario(scenario)
@@ -90,8 +89,7 @@ module AllureCucumber
     # Start the test for scenario examples
     def before_table_row(table_row)
       if @scenario_outline && !@header_row && !@in_multiline_arg
-        @row_count += 1
-        @tracker.scenario_name = "Example #{@row_count} : #{@scenario_outline_name}"
+        @tracker.scenario_name = "#{@scenario_outline_name}: #{table_row.values.join(' | ')}"
         start_test
       end
     end
