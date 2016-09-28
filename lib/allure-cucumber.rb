@@ -20,6 +20,11 @@ module AllureCucumber
         @output_dir || DEFAULT_OUTPUT_DIR
       end
 
+      def output_dir=(output_dir)
+        AllureRubyAdaptorApi::Config.output_dir = output_dir
+        @output_dir = output_dir
+      end
+
       def tms_prefix
         @tms_prefix || DEFAULT_TMS_PREFIX
       end
