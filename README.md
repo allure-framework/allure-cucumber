@@ -80,7 +80,7 @@ Put the following in your `features/support/env.rb` file:
 require 'allure-cucumber'
 ```
 
-Use `--format AllureCucumber::Formatter` while running cucumber or add it to `cucumber.yml`
+Use `--format AllureCucumber::Formatter --out where/you-want-results` while running cucumber or add it to `cucumber.yml`
 
 You can also [attach screenshots](https://github.com/allure-framework/allure-core/wiki/Glossary#attachment), logs or test data to [steps](https://github.com/allure-framework/allure-core/wiki/Glossary#test-step).
 
