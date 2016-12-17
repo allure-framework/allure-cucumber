@@ -1,5 +1,6 @@
-@dsl_attach_file
-Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all possible cases
+@embed_attach_file
+Feature: "AllureCucumber::Formatter#embed' method should work correctly in all possible cases
+
 
   In order to be sure that attaching a file works correctly
   I want to verify all possible ways how a file can be attached to Allure report
@@ -49,11 +50,11 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
     Given I use a fixture named "minimal_cucumber_app"
     Given a file named "features/lib/step_definitions/steps.rb" with:
     """
-    When /^I attach file$/ do
+    When /^I attach file using embed$/ do
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
     end
 
     Given /^This step is passed$/ do
@@ -75,14 +76,16 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
 
     """
 
+
+
+
   @scenario1
-  @known_defect
-  Scenario: Should not raise error message if "--format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" parameters were not passed.
+  Scenario: Should not raise error message if "--format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" parameters were not passed. BUT DOES IT
     Given a file named "features/docs/attach_file.feature" with:
     """
       Feature: title
         Scenario: attach_file
-          When I attach file
+          When I attach file using embed
     """
 
     When I run `cucumber --expand`
@@ -91,13 +94,12 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
 
   @scenario2
   @scenario_pw_2_01
-  @known_defect
   Scenario: Should not put 'Cannot attach...' message  if "--format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" parameter was specified. BUT DOES IT
     Given a file named "features/docs/attach_file.feature" with:
     """
       Feature: title
         Scenario: attach_file
-          When I attach file
+          When I attach file using embed
     """
     When I run `cucumber --expand --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty`
     Then the output from "cucumber --expand --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should not contain "Cannot attach"
@@ -113,7 +115,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       Feature: title
         Scenario: attach_file
           Given This step is passed
-          When I attach file
+          When I attach file using embed
     """
     When I run `cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty`
     Then the output from "cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should not contain "Cannot attach"
@@ -123,20 +125,19 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
 
   @scenario4
   @scenario_pw_2_02
-  @known_defect
   Scenario: Should not put 'Cannot attach...' message if file was attached into Scenario outline and  "--format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" parameter was specified. BUT DOES IT
     Given a file named "features/docs/attach_file.feature" with:
     """
       Feature: title
         Scenario Outline: attach_file
-          When I attach file
+          When I attach file using embed
         Examples:
           |run_count|
           | 1       |
           | 2       |
 
     """
-    When I run "cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty"
+    When I run `cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty`
     Then the output from "cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should not contain "Cannot attach"
     Then the output from "cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should contain "2 scenarios (2 passed)"
     And the exit status should be 0
@@ -151,7 +152,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       Feature: title
         Scenario Outline: attach_file
           Given This step is passed
-          When I attach file
+          When I attach file using embed
         Examples:
           |run_count|
           | 1       |
@@ -168,12 +169,12 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
   @scenario_6
   @scenario_pw_2_03
   @known_defect
-    Scenario: Should not put 'Cannot attach...' if file was attached into Background's step and  "--format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" parameter was specified.
+  Scenario: Should not put 'Cannot attach...' if file was attached into Background's step and  "--format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" parameter was specified.
     Given a file named "features/docs/attach_file.feature" with:
     """
       Feature: title
         Background:
-          When I attach file
+          When I attach file using embed
 
         Scenario: attach_file
           Given This step is passed
@@ -200,7 +201,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
 
     end
     """
@@ -224,7 +225,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
 
     end
     """
@@ -250,7 +251,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
 
     end
     """
@@ -276,7 +277,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
       block.call
     end
     """
@@ -294,7 +295,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       Feature: title
         Scenario Outline: attach_file
           Given This step is passed
-          When I attach file
+          When I attach file using embed
         Examples:
           |run_count|
           | 1       |
@@ -315,7 +316,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       Feature: title
         Background:
           Given This step is passed
-          And I attach file
+          And I attach file using embed
 
         Scenario: attach_file
           Given This step is passed
@@ -342,7 +343,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
 
     end
     """
@@ -367,7 +368,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
 
     end
     """
@@ -393,7 +394,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
 
     end
     """
@@ -420,7 +421,7 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       File.write('temp_file', 'some_text')
       file = File.open('temp_file')
       file.close
-      attach_file('some_title', file)
+      embed(file, 'not_used_param', 'some_title')
       block.call
     end
     """
@@ -429,7 +430,6 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
     Then the output from "cucumber --expand --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should contain "1 scenario (1 passed)"
     And the exit status should be 0
 
-
   @scenario_17
   Scenario: Should not fail if Scenario Outline was run and then Scenario where a file was attached
     Given a file named "features/docs/01_attach_file.feature" with:
@@ -437,22 +437,24 @@ Feature: "AllureCucumber::DSL#attach_file' method should work correctly in all p
       Feature: title
 
         Scenario Outline: first outline
-          Given I attach file
+          Given This step is passed
 
         Examples:
           | run_number |
           | 1 |
-
+          | 2 |
     """
     Given a file named "features/docs/02_attach_file.feature" with:
     """
       Feature: title
         Scenario: second scenario
-          Given I attach file
+          Given This step is passed
+          And I attach file using embed
 
     """
 
-    When I run `cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty`
+    When I successfully run `cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty`
+    Then the output from "cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should not contain "Cannot attach"
     Then the output from "cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should not contain "undefined method `[]' for nil:NilClass (NoMethodError)"
-    Then the output from "cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should contain "2 scenarios (2 passed)"
+    Then the output from "cucumber --format AllureCucumber::Formatter --out reports/allure-report/ --format pretty" should contain "3 scenarios (3 passed)"
     And the exit status should be 0
