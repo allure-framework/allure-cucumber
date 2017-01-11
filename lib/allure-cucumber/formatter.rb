@@ -122,7 +122,8 @@ module AllureCucumber
         if (!@before_hook_exception) && result.methods.include?(:exception)
           @before_hook_exception = result.exception
         end
-      elsif test_step.name != 'After hook'
+      end
+      if !TEST_HOOK_NAMES_TO_IGNORE.include?(test_step.name)
         if @tracker.scenario_name
           status = step_status(result)
           stop_step(status)
