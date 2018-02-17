@@ -154,7 +154,13 @@ module AllureCucumber
     def after_multiline_arg(multiline_arg)
       @in_multiline_arg = false
     end
-    
+
+    def embed(src, mime_type, label)
+      file = File.open(src)
+      file.close
+      attach_file(label, file)
+    end
+
     private
 
     def remove_tag_prefix(tag, prefix)
