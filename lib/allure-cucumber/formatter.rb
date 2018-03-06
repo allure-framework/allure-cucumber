@@ -109,7 +109,9 @@ module AllureCucumber
     def before_test_step(test_step)
       if !TEST_HOOK_NAMES_TO_IGNORE.include?(test_step.name) 
         if @tracker.scenario_name
-          @tracker.step_name = test_step.name
+          step_location =  @deferred_before_test_steps[index][:step].location.lines.first.to_s
+          step_name = @deferred_before_test_steps[index][:step].name
+          @tracker.step_name = "#{step_name} | line #{step_location}"
           start_step
         else
           @deferred_before_test_steps << {:step => test_step, :timestamp => Time.now}
@@ -216,7 +218,9 @@ module AllureCucumber
 
     def post_deferred_steps
       @deferred_before_test_steps.size.times do |index|
-        @tracker.step_name = @deferred_before_test_steps[index][:step].name 
+        step_location =  @deferred_before_test_steps[index][:step].location.lines.first.to_s
+        step_name = @deferred_before_test_steps[index][:step].name
+        @tracker.step_name = "#{step_name} | line #{step_location}"
         start_step
         multiline_arg = @deferred_before_test_steps[index][:multiline_arg]
         attach_multiline_arg_to_file(multiline_arg) if multiline_arg
