@@ -109,9 +109,9 @@ module AllureCucumber
     def before_test_step(test_step)
       if !TEST_HOOK_NAMES_TO_IGNORE.include?(test_step.name) 
         if @tracker.scenario_name
-          step_location =  @deferred_before_test_steps[index][:step].location.lines.first.to_s
-          step_name = @deferred_before_test_steps[index][:step].name
-          @tracker.step_id = "#{@tracker.feature_name}-#{step_name}-#{step_location}"
+          step_location =  test_step.location.lines.first.to_s
+          step_name = test_step.name
+          @tracker.step_id = "#{@tracker.feature_name}-#{@tracker.scenario_name}-#{step_name}-#{step_location}"
           @tracker.step_name = step_name
           start_step
         else
@@ -221,7 +221,7 @@ module AllureCucumber
       @deferred_before_test_steps.size.times do |index|
         step_location =  @deferred_before_test_steps[index][:step].location.lines.first.to_s
         step_name = @deferred_before_test_steps[index][:step].name
-        @tracker.step_id = "#{@tracker.feature_name}-#{step_name}-#{step_location}"
+        @tracker.step_id = "#{@tracker.feature_name}-#{@tracker.scenario_name}-#{step_name}-#{step_location}"
         @tracker.step_name = step_name
         start_step
         multiline_arg = @deferred_before_test_steps[index][:multiline_arg]
