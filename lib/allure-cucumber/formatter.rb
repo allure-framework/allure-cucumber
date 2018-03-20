@@ -109,7 +109,10 @@ module AllureCucumber
     def before_test_step(test_step)
       if !TEST_HOOK_NAMES_TO_IGNORE.include?(test_step.name) 
         if @tracker.scenario_name
-          @tracker.step_name = test_step.name
+          step_location =  test_step.location.lines.first.to_s
+          step_name = test_step.name
+          @tracker.step_id = "#{@tracker.feature_name}-#{@tracker.scenario_name}-#{step_name}-#{step_location}"
+          @tracker.step_name = step_name
           start_step
         else
           @deferred_before_test_steps << {:step => test_step, :timestamp => Time.now}
@@ -216,7 +219,10 @@ module AllureCucumber
 
     def post_deferred_steps
       @deferred_before_test_steps.size.times do |index|
-        @tracker.step_name = @deferred_before_test_steps[index][:step].name 
+        step_location =  @deferred_before_test_steps[index][:step].location.lines.first.to_s
+        step_name = @deferred_before_test_steps[index][:step].name
+        @tracker.step_id = "#{@tracker.feature_name}-#{@tracker.scenario_name}-#{step_name}-#{step_location}"
+        @tracker.step_name = step_name
         start_step
         multiline_arg = @deferred_before_test_steps[index][:multiline_arg]
         attach_multiline_arg_to_file(multiline_arg) if multiline_arg
@@ -240,15 +246,14 @@ module AllureCucumber
         @before_hook_exception = nil
       end
     end
-    
-    def start_step(step_name = @tracker.step_name)
-      AllureRubyAdaptorApi::Builder.start_step(@tracker.feature_name, @tracker.scenario_name, step_name) 
+
+    def start_step(step_name = @tracker.step_name, step_id = @tracker.step_id)
+      AllureRubyAdaptorApi::Builder.start_step(@tracker.feature_name, @tracker.scenario_name, step_name, step_id)
     end
 
-    def stop_step(status, step_name = @tracker.step_name)
-      AllureRubyAdaptorApi::Builder.stop_step(@tracker.feature_name, @tracker.scenario_name, step_name, status) 
+    def stop_step(status, step_name = @tracker.step_name, step_id = @tracker.step_id)
+      AllureRubyAdaptorApi::Builder.stop_step(@tracker.feature_name, @tracker.scenario_name, step_name, step_id, status)
     end
-    
-  end  
+
+  end
 end
-
