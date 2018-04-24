@@ -6,8 +6,8 @@ module AllureCucumber
   class Formatter
 
     include AllureCucumber::DSL
-    
-    TEST_HOOK_NAMES_TO_IGNORE = ['Before hook', 'After hook']
+
+    TEST_HOOK_NAMES_TO_IGNORE = ['Before hook', 'After hook', 'AfterStep hook']
     ALLOWED_SEVERITIES = ['blocker', 'critical', 'normal', 'minor', 'trivial']
     POSSIBLE_STATUSES = ['passed', 'failed', 'pending', 'skipped', 'undefined']
 
