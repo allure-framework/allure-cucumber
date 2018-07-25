@@ -72,6 +72,19 @@ Example:
     Then exactly (1) [validation_error] should be visible
 ```    
 
+### Compatability with Cucumber ~> 3
+Add the following in `features/support/env.rb` file:
+```ruby
+Cucumber::Core::Test::Step.module_eval do
+  def name
+    return text if self.text == 'Before hook'
+    return text if self.text == 'After hook'
+    "#{source.last.keyword}#{text}"
+  end
+end
+```
+More information in [issue 63](https://github.com/allure-framework/allure-cucumber/issues/63)
+
 ## Usage
 
 Put the following in your `features/support/env.rb` file:
