@@ -7,7 +7,7 @@ module AllureCucumber
 
     include AllureCucumber::DSL
     
-    TEST_HOOK_NAMES_TO_IGNORE = ['Before hook', 'After hook']
+    TEST_HOOK_NAMES_TO_IGNORE = ['Before hook', 'After hook', 'AfterStep hook']
     ALLOWED_SEVERITIES = ['blocker', 'critical', 'normal', 'minor', 'trivial']
     POSSIBLE_STATUSES = ['passed', 'failed', 'pending', 'skipped', 'undefined']
 
@@ -17,6 +17,7 @@ module AllureCucumber
       FileUtils.rm_rf(dir) unless AllureCucumber::Config.clean_dir == false
       FileUtils.mkdir_p(dir)
       @tracker = AllureCucumber::FeatureTracker.create
+      @builder = AllureRubyAdaptorApi::Builder
       @deferred_before_test_steps = []
       @deferred_after_test_steps = []
       @scenario_tags = {}
@@ -26,17 +27,18 @@ module AllureCucumber
     def before_feature(feature)
       feature_identifier = ENV['FEATURE_IDENTIFIER'] && "#{ENV['FEATURE_IDENTIFIER']} - "
       @tracker.feature_name = "#{feature_identifier}#{feature.name.gsub(/\n/, " ")}"
-      AllureRubyAdaptorApi::Builder.start_suite(@tracker.feature_name)
+      @tracker.file_location = feature.location.to_s
+      @builder.start_suite(@tracker.feature_name)
     end
 
-    # Find sceanrio type
+    # Find scenario type
     def before_feature_element(feature_element)
       @scenario_outline = feature_element.instance_of?(Cucumber::Core::Ast::ScenarioOutline)
     end
     
     def scenario_name(keyword, name, *args)
       scenario_name = (name.nil? || name == "") ? "Unnamed scenario" : name.gsub(/\n/, " ")
-      @scenario_outline ? @scenario_outline_name = scenario_name : @tracker.scenario_name = scenario_name 
+      @scenario_outline ? @scenario_outline_name = scenario_name : @tracker.scenario_name = scenario_name
     end
 
     # Analyze Cucumber Scenario Tags
@@ -44,29 +46,32 @@ module AllureCucumber
       tags.each do |tag|
         if AllureCucumber::Config.tms_prefix && tag.name.include?(AllureCucumber::Config.tms_prefix)
           @scenario_tags[:testId] = remove_tag_prefix(tag.name, AllureCucumber::Config.tms_prefix)
-        end
-
-        if tag.name.include?(AllureCucumber::Config.issue_prefix)
+        elsif tag.name.include?(AllureCucumber::Config.issue_prefix)
           @scenario_tags[:issue] = remove_tag_prefix(tag.name, AllureCucumber::Config.issue_prefix)
-        end
-
-        if tag.name.include?(AllureCucumber::Config.severity_prefix) && ALLOWED_SEVERITIES.include?(remove_tag_prefix(tag.name, AllureCucumber::Config.severity_prefix))
+        elsif tag.name.include?(AllureCucumber::Config.severity_prefix) && ALLOWED_SEVERITIES.include?(remove_tag_prefix(tag.name, AllureCucumber::Config.severity_prefix))
           @scenario_tags[:severity] = remove_tag_prefix(tag.name, AllureCucumber::Config.severity_prefix).downcase.to_sym
+        else
+          if @scenario_tags[:tag]
+            @scenario_tags[:tag] << remove_tag_prefix(tag.name, '')
+          else
+            @scenario_tags[:tag] = [remove_tag_prefix(tag.name, '')]
+          end
         end
       end
+      @scenario_tags[:tag] =  @scenario_tags[:tag].uniq.sort if @scenario_tags[:tag]
     end
 
     def before_examples(*args)
       @header_row = true
     end
 
-    def before_scenario(scenario)
-      # not used now, but keeping for later.
+    def before_test_case(test_case)
+      # not used now, but keeping for later
     end
 
     # Start the test for normal scenarios
     def before_steps(steps)
-      if !@scenario_outline  
+      if !@scenario_outline
         start_test
       end
     end
@@ -137,11 +142,11 @@ module AllureCucumber
 
     # Stop the suite
     def after_feature(feature)
-      AllureRubyAdaptorApi::Builder.stop_suite(@tracker.feature_name)
+      @builder.stop_suite(@tracker.feature_name)
     end
 
     def after_features(features)
-      AllureRubyAdaptorApi::Builder.build!
+      @builder.build!
     end
     
     def before_multiline_arg(multiline_arg)
@@ -212,7 +217,8 @@ module AllureCucumber
       if @tracker.scenario_name
         @scenario_tags[:feature] = @tracker.feature_name
         @scenario_tags[:story]   = @tracker.scenario_name
-        AllureRubyAdaptorApi::Builder.start_test(@tracker.feature_name, @tracker.scenario_name, @scenario_tags)
+        #@scenario_tags[:severity] = 'normal'
+        @builder.start_test(@tracker.feature_name, @tracker.scenario_name, @scenario_tags)
         post_deferred_steps
       end
     end
@@ -238,7 +244,7 @@ module AllureCucumber
         result[:started_at] = @deferred_before_test_steps[0][:timestamp]
       end
       if @tracker.scenario_name
-        AllureRubyAdaptorApi::Builder.stop_test(@tracker.feature_name, @tracker.scenario_name, result)
+        @builder.stop_test(@tracker.feature_name, @tracker.scenario_name, result)
         @tracker.scenario_name = nil
         @deferred_before_test_steps = []
         @deferred_after_test_steps = []
@@ -248,11 +254,11 @@ module AllureCucumber
     end
 
     def start_step(step_name = @tracker.step_name, step_id = @tracker.step_id)
-      AllureRubyAdaptorApi::Builder.start_step(@tracker.feature_name, @tracker.scenario_name, step_name, step_id)
+      @builder.start_step(@tracker.feature_name, @tracker.scenario_name, step_name, step_id)
     end
 
     def stop_step(status, step_name = @tracker.step_name, step_id = @tracker.step_id)
-      AllureRubyAdaptorApi::Builder.stop_step(@tracker.feature_name, @tracker.scenario_name, step_name, step_id, status)
+      @builder.stop_step(@tracker.feature_name, @tracker.scenario_name, step_name, step_id, status)
     end
 
   end
