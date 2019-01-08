@@ -27,7 +27,6 @@ module AllureCucumber
     def before_feature(feature)
       feature_identifier = ENV['FEATURE_IDENTIFIER'] && "#{ENV['FEATURE_IDENTIFIER']} - "
       @tracker.feature_name = "#{feature_identifier}#{feature.name.gsub(/\n/, " ")}"
-      @tracker.file_location = feature.location.to_s
       @builder.start_suite(@tracker.feature_name)
     end
 
@@ -66,7 +65,7 @@ module AllureCucumber
     end
 
     def before_test_case(test_case)
-      # not used now, but keeping for later
+      @tracker.file_location = test_case.location.to_s
     end
 
     # Start the test for normal scenarios
