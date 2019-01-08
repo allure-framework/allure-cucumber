@@ -218,7 +218,7 @@ module AllureCucumber
         @scenario_tags[:feature] = @tracker.feature_name
         @scenario_tags[:story]   = @tracker.scenario_name
         #@scenario_tags[:severity] = 'normal'
-        @builder.start_test(@tracker.feature_name, @tracker.scenario_name, @scenario_tags)
+        @builder.start_test(@tracker.feature_name, @tracker.scenario_name, @scenario_tags, @tracker.file_location)
         post_deferred_steps
       end
     end
