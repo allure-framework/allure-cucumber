@@ -1,8 +1,8 @@
-require 'allure-ruby-adaptor-api'
-require 'allure-cucumber/version'
-require 'allure-cucumber/feature_tracker'
-require 'allure-cucumber/dsl'
-require 'allure-cucumber/formatter'
+require "allure-ruby-adaptor-api"
+require "allure-cucumber/version"
+require "allure-cucumber/feature_tracker"
+require "allure-cucumber/dsl"
+require "allure-cucumber/formatter"
 
 module AllureCucumber
 
@@ -11,10 +11,10 @@ module AllureCucumber
 
       attr_accessor :output_dir, :clean_dir, :tms_prefix, :issue_prefix, :severity_prefix
 
-      DEFAULT_OUTPUT_DIR      = 'gen/allure-results'
-      DEFAULT_TMS_PREFIX      = '@TMS:'
-      DEFAULT_ISSUE_PREFIX    = '@ISSUE:'
-      DEFAULT_SEVERITY_PREFIX = '@SEVERITY:'
+      DEFAULT_OUTPUT_DIR      = "gen/allure-results"
+      DEFAULT_TMS_PREFIX      = "@TMS:"
+      DEFAULT_ISSUE_PREFIX    = "@ISSUE:"
+      DEFAULT_SEVERITY_PREFIX = "@SEVERITY:"
 
       def output_dir
         @output_dir || DEFAULT_OUTPUT_DIR
