@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module AllureCucumber
   module DSL
-
     def attach_file(title, file, mime_type = nil)
       @tracker = AllureCucumber::FeatureTracker.tracker
       if @tracker.scenario_name
@@ -10,6 +11,5 @@ module AllureCucumber
         puts "Cannot attach #{title} to step #{@tracker.step_name} as scenario name is undefined"
       end
     end
-
   end
 end
