@@ -809,16 +809,10 @@ Performance/RedundantMerge:
   Enabled: true
   MaxKeyValuePairs: 2
 
-Performance/RedundantSortBy:
-  Enabled: true
-
 Performance/RegexpMatch:
   Enabled: true
 
 Performance/ReverseEach:
-  Enabled: true
-
-Performance/Sample:
   Enabled: true
 
 Performance/Size:
@@ -838,9 +832,6 @@ Performance/TimesMap:
   SafeAutoCorrect: false # see https://github.com/rubocop-hq/rubocop/issues/4658
 
 Performance/UnfreezeString:
-  Enabled: true
-
-Performance/UnneededSort:
   Enabled: true
 
 Performance/UriDefaultParser:
@@ -1103,6 +1094,8 @@ Style/MethodCallWithArgsParentheses:
     - add_development_dependency
     - gem
     - require
+    - require_relative
+    - require_rel
     - source
     - task
     - raise
@@ -1110,6 +1103,8 @@ Style/MethodCallWithArgsParentheses:
     - debug
     - info
     - warn
+    - expect
+    - to
   AllowParenthesesInMultilineCall: false
   AllowParenthesesInChaining: false
   EnforcedStyle: require_parentheses
@@ -1269,6 +1264,9 @@ Style/PercentQLiterals:
   Enabled: true
   EnforcedStyle: upper_case_q
 
+Style/RedundantSortBy:
+  Enabled: true
+
 Style/PerlBackrefs:
   Enabled: true
 
@@ -1329,6 +1327,9 @@ Style/SafeNavigation:
     - present?
     - blank?
     - presence
+
+Style/Sample:
+  Enabled: true
 
 Style/SelfAssignment:
   Enabled: true
@@ -1472,6 +1473,9 @@ Style/UnneededInterpolation:
   Enabled: true
 
 Style/UnneededPercentQ:
+  Enabled: true
+
+Style/UnneededSort:
   Enabled: true
 
 Style/UnpackFirst:
