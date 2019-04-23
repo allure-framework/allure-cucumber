@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    allure_cucumber (2.10.0.beta1)
+    allure-cucumber (2.10.0.beta1)
       allure_ruby_commons (~> 2.10.0.beta1)
       cucumber (~> 3.1)
 
@@ -93,7 +93,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  allure_cucumber!
+  allure-cucumber!
   bundler (~> 2.0)
   pry (~> 0.12)
   rubocop (~> 0.67)
