@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "cucumber"
+require "cucumber/core"
+
 module Allure
   class AllureCucumberModel
     class << self
@@ -10,11 +13,8 @@ module Allure
         TestResult.new(
           name: test_case.name,
           full_name: "#{test_case.feature.name}: #{test_case.name}",
-          labels: labels(
-            feature: test_case.feature.name,
-            scenario: test_case.name,
-            tags: test_case.tags,
-          ),
+          labels: labels(test_case),
+          parameters: parameters(test_case) || [],
         )
       end
 
@@ -47,12 +47,18 @@ module Allure
 
       private
 
-      def labels(feature:, scenario:, tags:)
-        feature_labels = %w[feature package suite].map { |name| Label.new(name, feature) }
-        scenario_labels = %w[story testClass].map { |name| Label.new(name, scenario) }
-        tag_labels = tags.map { |tag| Label.new("tag", tag.name.delete_prefix("@")) }
+      def labels(test_case)
+        feature_labels = %w[feature package suite].map { |name| Label.new(name, test_case.feature.name) }
+        scenario_labels = %w[story testClass].map { |name| Label.new(name, test_case.name) }
+        tag_labels = test_case.tags.map { |tag| Label.new("tag", tag.name.delete_prefix("@")) }
 
         feature_labels + scenario_labels + tag_labels
+      end
+
+      def parameters(test_case)
+        test_case.source
+          .detect { |it| it.is_a?(Cucumber::Core::Ast::ExamplesTable::Row) }&.values
+          &.map { |value| Parameter.new("argument", value) }
       end
 
       def keyword(test_step)
