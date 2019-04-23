@@ -4,6 +4,7 @@ PATH
     allure-cucumber (2.10.0.beta1)
       allure_ruby_commons (~> 2.10.0.beta1)
       cucumber (~> 3.1)
+      cucumber-core (~> 3.2)
 
 GEM
   remote: https://rubygems.org/

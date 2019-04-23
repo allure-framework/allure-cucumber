@@ -31,12 +31,12 @@ module Allure
       # Convert result to status detail
       # @param [Cucumber::Core::Test::Result] result
       # @return [StatusDetails]
-      def status_detail(result)
+      def status_details(result)
         exception = result.instance_variable_get("@exception")
         StatusDetails.new(
           flaky: result.flaky?,
           message: exception&.message || nil,
-          trace: exception&.full_message || nil,
+          trace: exception&.backtrace&.join("\n") || nil,
         )
       end
     end

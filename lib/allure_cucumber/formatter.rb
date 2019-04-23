@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require "cucumber-core"
+require "cucumber/core"
+require_relative "cucumber_model"
 
 module Allure
   class CucumberFormatter
@@ -26,7 +27,7 @@ module Allure
     # @param [Cucumber::Core::Events::TestCaseStarted] event
     # @return [void]
     def on_test_case_started(event)
-      lifecycle.start_test_container(TestResultContainer.new(name: test_case.name))
+      lifecycle.start_test_container(TestResultContainer.new(name: event.test_case.name))
       lifecycle.start_test_case(AllureCucumberModel.test_result(event.test_case))
     end
 
@@ -34,7 +35,7 @@ module Allure
     # @param [Cucumber::Core::Events::TestStepStarted] event
     # @return [void]
     def on_test_step_started(event)
-      hook?(event.test_step) ? handle_hook_started : handle_step_started
+      hook?(event.test_step) ? handle_hook_started(event.test_step) : handle_step_started(event.test_step)
     end
 
     # Handle test step finished event
@@ -44,7 +45,7 @@ module Allure
       update_block = proc do |step|
         step.stage = Stage::FINISHED
         step.status = ALLURE_STATUS.fetch(event.result.to_sym, Status::BROKEN)
-        step.status_detail = AllureCucumberModel.status_detail(event.result)
+        step.status_details = AllureCucumberModel.status_details(event.result)
       end
       step_type = hook?(event.test_step) ? "fixture" : "test_step"
 
@@ -59,8 +60,8 @@ module Allure
       lifecycle.update_test_case do |test_case|
         test_case.stage = Stage::FINISHED
         test_case.status = ALLURE_STATUS.fetch(event.result.to_sym, Status::BROKEN)
-        test_case.status_detail = AllureCucumberModel.status_detail(event.result)
-      end 
+        test_case.status_details = AllureCucumberModel.status_details(event.result)
+      end
       lifecycle.stop_test_case
       lifecycle.stop_test_container
     end
