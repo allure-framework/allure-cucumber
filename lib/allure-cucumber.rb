@@ -1,7 +1,7 @@
 # rubocop:disable Naming/FileName
 # frozen_string_literal: true
 
-require "allure_ruby_commons"
+require "allure-ruby-commons"
 
 require "allure_cucumber/formatter"
 require "allure_cucumber/config"

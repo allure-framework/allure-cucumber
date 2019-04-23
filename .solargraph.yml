@@ -3,7 +3,7 @@ include:
 - "**/*.rb"
 exclude:
 - "spec/**/*"
-require: []
+require: ["cucumber", "cucumber/core"]
 domains: []
 reporters:
 - rubocop

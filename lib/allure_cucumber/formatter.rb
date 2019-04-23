@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "cucumber/core"
 require_relative "cucumber_model"
 
 module Allure
@@ -15,6 +14,7 @@ module Allure
       passed: Status::PASSED,
     }.freeze
 
+    # @param [Cucumber::Configuration] config
     def initialize(config)
       Allure::Config.output_dir = config.out_stream if config.out_stream.is_a?(String)
       config.on_event(:test_case_started, &method(:on_test_case_started))

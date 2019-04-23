@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "cucumber" , "~> 3.1"
   spec.add_dependency "cucumber-core" , "~> 3.2"
-  spec.add_dependency "allure_ruby_commons", "~> 2.10.0.beta1"
+  spec.add_dependency "allure-ruby-commons", "~> 2.10.0.beta1"
 
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "rubocop", "~> 0.67"
