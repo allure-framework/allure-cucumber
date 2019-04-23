@@ -39,12 +39,12 @@ module Allure
       # @param [Cucumber::Core::Test::Result] result
       # @return [StatusDetails]
       def status_details(result)
-        exception = result.instance_variable_get("@exception")
-        StatusDetails.new(
-          flaky: result.flaky?,
-          message: exception&.message || nil,
-          trace: exception&.backtrace&.join("\n") || nil,
-        )
+        options = { flaky: result.flaky? }
+        if result.failed? || result.undefined?
+          options[:message] = result.message
+          options[:trace] = result.backtrace&.join("\n")
+        end
+        StatusDetails.new(**options)
       end
 
       private
