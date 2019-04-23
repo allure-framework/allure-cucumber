@@ -2,6 +2,7 @@
 
 require "cucumber"
 require "cucumber/core"
+require "digest"
 
 module Allure
   class AllureCucumberModel
@@ -12,6 +13,7 @@ module Allure
       def test_result(test_case)
         TestResult.new(
           name: test_case.name,
+          history_id: Digest::MD5.hexdigest(test_case.inspect),
           full_name: "#{test_case.feature.name}: #{test_case.name}",
           labels: labels(test_case),
           parameters: parameters(test_case) || [],
