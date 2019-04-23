@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary = "allure_cucumber:#{Allure::Cucumber::Version::STRING}"
   spec.description = %(Adaptor to use Allure framework with cucumber)
   spec.homepage = "http://allure.qatools.ru"
-  spec.license = "Apache2"
+  spec.license = "Apache-2.0"
 
   spec.files = `git ls-files -z`.split("\x0")
   spec.executables = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
