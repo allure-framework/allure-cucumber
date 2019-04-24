@@ -4,8 +4,12 @@ require "cucumber"
 require "cucumber/core"
 require "digest"
 
+require_relative "ast_transformer"
+
 module Allure
   class AllureCucumberModel
+    extend AstTransformer
+
     class << self
       # Convert to allure test result
       # @param [Cucumber::Core::Test::Case] test_case
@@ -13,6 +17,8 @@ module Allure
       def test_result(test_case)
         TestResult.new(
           name: test_case.name,
+          description: description(test_case),
+          description_html: description(test_case),
           history_id: Digest::MD5.hexdigest(test_case.inspect),
           full_name: "#{test_case.feature.name}: #{test_case.name}",
           labels: labels(test_case),
@@ -24,7 +30,7 @@ module Allure
       # @param [Cucumber::Core::Test::Step] test_step
       # @return [StepResult]
       def step_result(test_step)
-        StepResult.new(name: "#{keyword(test_step)}#{test_step.text}")
+        StepResult.new(name: "#{step(test_step).keyword}#{test_step.text}")
       end
 
       # Convert to allure step result
@@ -39,12 +45,7 @@ module Allure
       # @param [Cucumber::Core::Test::Result] result
       # @return [StatusDetails]
       def status_details(result)
-        options = { flaky: result.flaky? }
-        if result.failed? || result.undefined?
-          options[:message] = result.message
-          options[:trace] = result.backtrace&.join("\n")
-        end
-        StatusDetails.new(**options)
+        StatusDetails.new(**{ flaky: result.flaky? }.merge(failure_details(result)))
       end
 
       private
@@ -58,13 +59,19 @@ module Allure
       end
 
       def parameters(test_case)
-        test_case.source
-          .detect { |it| it.is_a?(Cucumber::Core::Ast::ExamplesTable::Row) }&.values
-          &.map { |value| Parameter.new("argument", value) }
+        example_row(test_case)&.values&.map { |value| Parameter.new("argument", value) }
       end
 
-      def keyword(test_step)
-        test_step.source.detect { |it| it.is_a?(Cucumber::Core::Ast::Step) }.keyword
+      def description(test_case)
+        scenario = scenario(test_case)
+        scenario.description.empty? ? "Location - #{scenario.file_colon_line}" : scenario.description
+      end
+
+      def failure_details(result)
+        return { message: result.exception.message, trace: result.exception.backtrace.join("\n") } if result.failed?
+        return { message: result.message, trace: result.backtrace.join("\n") } if result.undefined?
+
+        {}
       end
     end
   end

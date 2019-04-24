@@ -45,7 +45,6 @@ module Allure
       update_block = proc do |step|
         step.stage = Stage::FINISHED
         step.status = ALLURE_STATUS.fetch(event.result.to_sym, Status::BROKEN)
-        step.status_details = AllureCucumberModel.status_details(event.result)
       end
       step_type = hook?(event.test_step) ? "fixture" : "test_step"
 
