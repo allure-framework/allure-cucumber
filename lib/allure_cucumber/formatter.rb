@@ -42,6 +42,8 @@ module Allure
     # @param [Cucumber::Core::Events::TestStepFinished] event
     # @return [void]
     def on_test_step_finished(event)
+      return if prepare_world_hook?(event.test_step)
+
       update_block = proc do |step|
         step.stage = Stage::FINISHED
         step.status = ALLURE_STATUS.fetch(event.result.to_sym, Status::BROKEN)
@@ -77,11 +79,17 @@ module Allure
       HOOK_HANDLERS.key?(test_step.text)
     end
 
+    def prepare_world_hook?(test_step)
+      hook?(test_step) && test_step.inspect.include?("prepare_world.rb")
+    end
+
     def handle_step_started(test_step)
       lifecycle.start_test_step(AllureCucumberModel.step_result(test_step))
     end
 
     def handle_hook_started(test_step)
+      return if prepare_world_hook?(test_step)
+
       lifecycle.public_send(HOOK_HANDLERS[test_step.text], AllureCucumberModel.fixture_result(test_step))
     end
   end
