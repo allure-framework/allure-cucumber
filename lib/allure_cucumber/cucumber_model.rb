@@ -3,6 +3,7 @@
 require "cucumber"
 require "cucumber/core"
 require "digest"
+require "csv"
 
 require_relative "ast_transformer"
 
@@ -30,7 +31,10 @@ module Allure
       # @param [Cucumber::Core::Test::Step] test_step
       # @return [StepResult]
       def step_result(test_step)
-        StepResult.new(name: "#{step(test_step).keyword}#{test_step.text}")
+        StepResult.new(
+          name: "#{step(test_step).keyword}#{test_step.text}",
+          attachments: [multiline_arg_attachment(test_step)].compact,
+        )
       end
 
       # Convert to allure step result
@@ -49,6 +53,12 @@ module Allure
       end
 
       private
+
+      # Get thread specific lifecycle
+      # @return [Allure::AllureLifecycle]
+      def lifecycle
+        Allure.lifecycle
+      end
 
       def labels(test_case)
         feature_labels = %w[feature package suite].map { |name| Label.new(name, test_case.feature.name) }
@@ -72,6 +82,26 @@ module Allure
         return { message: result.message, trace: result.backtrace.join("\n") } if result.undefined?
 
         {}
+      end
+
+      def multiline_arg_attachment(test_step)
+        arg = multiline_arg(test_step)
+        return unless arg
+
+        arg.data_table? ? data_table_attachment(arg) : docstring_attachment(arg)
+      end
+
+      def data_table_attachment(multiline_arg)
+        attachment = lifecycle.prepare_attachment("data-table", ContentType::CSV)
+        csv = multiline_arg.raw.each_with_object([]) { |row, arr| arr.push(row.to_csv) }.join("")
+        lifecycle.write_attachment(csv, attachment)
+        attachment
+      end
+
+      def docstring_attachment(multiline_arg)
+        attachment = lifecycle.prepare_attachment("docstring", ContentType::TXT)
+        lifecycle.write_attachment(multiline_arg.content, attachment)
+        attachment
       end
     end
   end

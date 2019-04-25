@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Cucumber::Core::Ast is removed in cucumber-core 4.0 version.
+# This will have to be updated accordingly, once stable version rolls out
+
 module Allure
   module AstTransformer
     # Get scenario object
@@ -23,6 +26,16 @@ module Allure
     # @return [Cucumber::Core::Ast::ExamplesTable::Row]
     def example_row(test_case)
       test_case.source.detect { |it| it.is_a?(Cucumber::Core::Ast::ExamplesTable::Row) }
+    end
+
+    # Get step multiline argument
+    # @param [Cucumber::Core::Test::Step] test_step
+    # @return [Cucumber::Core::Ast::DataTable, String]
+    def multiline_arg(test_step)
+      multiline_arg = step(test_step).multiline_arg
+      return if multiline_arg.is_a?(Cucumber::Core::Ast::EmptyMultilineArgument)
+
+      multiline_arg
     end
   end
 end
