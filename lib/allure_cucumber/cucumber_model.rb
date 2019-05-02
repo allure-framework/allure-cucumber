@@ -6,10 +6,12 @@ require "digest"
 require "csv"
 
 require_relative "ast_transformer"
+require_relative "tag_parser"
 
 module Allure
   class AllureCucumberModel
     extend AstTransformer
+    extend TagParser
 
     class << self
       # Convert to allure test result
@@ -23,6 +25,7 @@ module Allure
           history_id: Digest::MD5.hexdigest(test_case.inspect),
           full_name: "#{test_case.feature.name}: #{test_case.name}",
           labels: labels(test_case),
+          links: links(test_case),
           parameters: parameters(test_case) || [],
         )
       end
@@ -61,11 +64,24 @@ module Allure
       end
 
       def labels(test_case)
-        feature_labels = %w[feature package suite].map { |name| Label.new(name, test_case.feature.name) }
-        scenario_labels = %w[story testClass].map { |name| Label.new(name, test_case.name) }
-        tag_labels = test_case.tags.map { |tag| Label.new("tag", tag.name.delete_prefix("@")) }
+        labels = []
+        labels << ResultUtils.feature_label(test_case.feature.name)
+        labels << ResultUtils.package_label(test_case.feature.name)
+        labels << ResultUtils.suite_label(test_case.feature.name)
+        labels << ResultUtils.story_label(test_case.name)
+        labels << ResultUtils.test_class_label(test_case.name)
+        unless test_case.tags.empty?
+          labels.push(*tag_labels(test_case.tags))
+          labels << severity(test_case.tags)
+        end
 
-        feature_labels + scenario_labels + tag_labels
+        labels
+      end
+
+      def links(test_case)
+        return [] unless test_case.tags
+
+        tms_links(test_case.tags) + issue_links(test_case.tags)
       end
 
       def parameters(test_case)

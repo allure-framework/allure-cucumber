@@ -8,12 +8,18 @@ require "allure_cucumber/config"
 
 module Allure
   class << self
+    # Get allure cucumber configuration
+    # @return [Allure::CucumberConfig]
+    def configuration
+      CucumberConfig
+    end
+
     # Set allure configuration
     # @yield [config]
     #
     # @yieldparam [Allure::CucumberConfig]
     # @return [void]
-    def configure_cucumber
+    def configure
       yield(CucumberConfig)
     end
   end
