@@ -15,3 +15,7 @@ end
 Then("result is {int}") do |num|
   expect(@c).to eq(num)
 end
+
+Then("step fails with simple exception") do
+  raise Exception.new("Simple error!")
+end

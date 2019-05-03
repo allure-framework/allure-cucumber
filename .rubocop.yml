@@ -1105,6 +1105,7 @@ Style/MethodCallWithArgsParentheses:
     - warn
     - expect
     - to
+    - not_to
   AllowParenthesesInMultilineCall: false
   AllowParenthesesInChaining: false
   EnforcedStyle: require_parentheses

@@ -25,7 +25,6 @@ describe Allure::CucumberFormatter do
     expect(lifecycle).to receive(:start_test_container) do |arg|
       expect(arg.name).to eq(scenario)
     end
-
     run_cucumber_cli("features/features/simple.feature")
   end
 
