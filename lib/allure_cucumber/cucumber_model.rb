@@ -90,7 +90,7 @@ module Allure
 
       def description(test_case)
         scenario = scenario(test_case)
-        scenario.description.empty? ? "Location - #{scenario.file_colon_line}" : scenario.description
+        scenario.description.empty? ? "Location - #{scenario.file_colon_line}" : scenario.description.strip
       end
 
       def failure_details(result)

@@ -4,18 +4,17 @@ PATH
     allure-cucumber (2.10.0.beta1)
       allure-ruby-commons (~> 2.10.0.beta1)
       cucumber (~> 3.1)
-      cucumber-core (~> 3.2)
 
 GEM
   remote: https://rubygems.org/
   specs:
     allure-ruby-commons (2.10.0.beta1)
-      json (~> 2.2)
+      json (>= 1.8, < 3)
       require_all (~> 2.0)
       uuid (~> 2.3.9)
     ast (2.4.0)
     backport (1.0.0)
-    backports (3.13.0)
+    backports (3.14.0)
     builder (3.2.3)
     coderay (1.1.2)
     cucumber (3.1.2)
@@ -59,6 +58,19 @@ GEM
     require_all (2.0.0)
     reverse_markdown (1.1.0)
       nokogiri
+    rspec (3.8.0)
+      rspec-core (~> 3.8.0)
+      rspec-expectations (~> 3.8.0)
+      rspec-mocks (~> 3.8.0)
+    rspec-core (3.8.0)
+      rspec-support (~> 3.8.0)
+    rspec-expectations (3.8.3)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.8.0)
+    rspec-mocks (3.8.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.8.0)
+    rspec-support (3.8.0)
     rubocop (0.67.2)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
@@ -97,6 +109,7 @@ DEPENDENCIES
   allure-cucumber!
   bundler (~> 2.0)
   pry (~> 0.12)
+  rspec (~> 3.8)
   rubocop (~> 0.67)
   rubocop-performance (~> 1.1)
   solargraph (~> 0.32)
