@@ -57,7 +57,7 @@ describe Allure::CucumberFormatter do
 
   context "fixture" do
     it "for before hook is started" do
-      run_cucumber_cli("features/features/hooks.feature", "@before")
+      run_cucumber_cli("features/features/hooks.feature", "--tags", "@before")
 
       expect(lifecycle).to have_received(:start_prepare_fixture).once do |fixture|
         expect(fixture.name).to eq("env.rb:12")
@@ -65,7 +65,7 @@ describe Allure::CucumberFormatter do
     end
 
     it "for after hook is started" do
-      run_cucumber_cli("features/features/hooks.feature", "@after")
+      run_cucumber_cli("features/features/hooks.feature", "--tags", "@after")
 
       expect(lifecycle).to have_received(:start_tear_down_fixture).once do |fixture|
         expect(fixture.name).to eq("env.rb:19")

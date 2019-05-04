@@ -27,6 +27,7 @@ module Allure
           labels: labels(test_case),
           links: links(test_case),
           parameters: parameters(test_case) || [],
+          status_details: Allure::StatusDetails.new(**status_detail_tags(test_case.tags.map(&:name))),
         )
       end
 
@@ -48,11 +49,14 @@ module Allure
         FixtureResult.new(name: location)
       end
 
-      # Convert result to status detail
-      # @param [Cucumber::Core::Test::Result] result
-      # @return [StatusDetails]
-      def status_details(result)
-        StatusDetails.new(**{ flaky: result.flaky? }.merge(failure_details(result)))
+      # Get failure details
+      # @param [Cucumber::Core::Test::Result] result <description>
+      # @return [Hash<Symbol, String>]
+      def failure_details(result)
+        return { message: result.exception.message, trace: result.exception.backtrace.join("\n") } if result.failed?
+        return { message: result.message, trace: result.backtrace.join("\n") } if result.undefined?
+
+        {}
       end
 
       private
@@ -91,13 +95,6 @@ module Allure
       def description(test_case)
         scenario = scenario(test_case)
         scenario.description.empty? ? "Location - #{scenario.file_colon_line}" : scenario.description.strip
-      end
-
-      def failure_details(result)
-        return { message: result.exception.message, trace: result.exception.backtrace.join("\n") } if result.failed?
-        return { message: result.message, trace: result.backtrace.join("\n") } if result.undefined?
-
-        {}
       end
 
       def multiline_arg_attachment(test_step)

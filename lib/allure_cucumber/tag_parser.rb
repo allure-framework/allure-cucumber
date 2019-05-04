@@ -13,6 +13,7 @@ module Allure
     def tms_links(tags)
       return [] unless CucumberConfig.tms_link_pattern
 
+      tms_pattern = reserved_patterns[:tms]
       tags
         .select { |tag| tag.name.match?(tms_pattern) }
         .map { |tag| tag.name.match(tms_pattern) { |match| ResultUtils.tms_link(match[:tms]) } }
@@ -21,12 +22,14 @@ module Allure
     def issue_links(tags)
       return [] unless CucumberConfig.issue_link_pattern
 
+      issue_pattern = reserved_patterns[:issue]
       tags
         .select { |tag| tag.name.match?(issue_pattern) }
         .map { |tag| tag.name.match(issue_pattern) { |match| ResultUtils.issue_link(match[:issue]) } }
     end
 
     def severity(tags)
+      severity_pattern = reserved_patterns[:severity]
       severity = tags
         .detect { |tag| tag.name.match?(severity_pattern) }&.name
         &.match(severity_pattern)&.[](:severity) || "normal"
@@ -34,22 +37,29 @@ module Allure
       ResultUtils.severity_label(severity)
     end
 
+    def status_detail_tags(tags)
+      {
+        flaky: tags.any? { |tag| tag.match?(reserved_patterns[:flaky]) },
+        muted: tags.any? { |tag| tag.match?(reserved_patterns[:muted]) },
+        known: tags.any? { |tag| tag.match?(reserved_patterns[:known]) },
+      }
+    end
+
     private
 
+    def reserved_patterns
+      @reserved_patterns ||= {
+        tms: /@#{CucumberConfig.tms_prefix}(?<tms>\S+)/,
+        issue: /@#{CucumberConfig.issue_prefix}(?<issue>\S+)/,
+        severity: /@#{CucumberConfig.severity_prefix}(?<severity>\S+)/,
+        flaky: /@flaky/,
+        muted: /@muted/,
+        known: /@known/,
+      }
+    end
+
     def reserved?(tag)
-      tag.match?(tms_pattern) || tag.match?(issue_pattern) || tag.match?(severity_pattern)
-    end
-
-    def tms_pattern
-      /@#{CucumberConfig.tms_prefix}(?<tms>\S+)/
-    end
-
-    def issue_pattern
-      /@#{CucumberConfig.issue_prefix}(?<issue>\S+)/
-    end
-
-    def severity_pattern
-      /@#{CucumberConfig.severity_prefix}(?<severity>\S+)/
+      reserved_patterns.values.any? { |pattern| tag.match?(pattern) }
     end
   end
 end

@@ -53,7 +53,7 @@ describe Allure::CucumberFormatter do
     end
 
     it "with passed status is updated" do
-      run_cucumber_cli("features/features/hooks.feature", "@before")
+      run_cucumber_cli("features/features/hooks.feature", "--tags", "@before")
 
       expect(lifecycle).to have_received(:update_fixture).with(no_args).once do |&arg|
         arg.call(@step)
@@ -62,7 +62,7 @@ describe Allure::CucumberFormatter do
     end
 
     it "with failed status is updated" do
-      run_cucumber_cli("features/features/hooks.feature", "@broken_hook")
+      run_cucumber_cli("features/features/hooks.feature", "--tags", "@broken_hook")
 
       expect(lifecycle).to have_received(:update_fixture).with(no_args).once do |&arg|
         arg.call(@step)
