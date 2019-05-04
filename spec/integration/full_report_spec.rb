@@ -2,12 +2,14 @@
 
 require_relative "../spec_helper"
 
-describe "Full report" do
+describe "allure-cucumber" do
   include_context "cucumber runner"
 
   let(:allure_cli) { Allure::Util.allure_cli }
 
-  before(:all) { FileUtils.remove_dir(Allure::CucumberConfig.output_dir) }
+  before(:all) do
+    FileUtils.remove_dir(Allure::CucumberConfig.output_dir) if File.exist?(Allure::CucumberConfig.output_dir)
+  end
 
   it "Allure commandline generates report", integration: true do
     run_cucumber_cli("features/features")

@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe Allure::CucumberFormatter do
+describe "CucumberFormatter.on_test_case_started" do
   include_context "allure mock"
   include_context "cucumber runner"
 

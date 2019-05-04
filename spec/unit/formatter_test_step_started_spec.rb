@@ -2,13 +2,13 @@
 
 require_relative "../spec_helper"
 
-describe Allure::CucumberFormatter do
+describe "CucumberFormatter.on_test_step_started" do
   include_context "allure mock"
   include_context "cucumber runner"
 
   let(:result_utils) { Allure::ResultUtils }
 
-  context "step" do
+  context "test step" do
     before do
       allow(lifecycle).to receive(:prepare_attachment) do |name, type|
         Allure::AllureLifecycle.new.prepare_attachment(name, type)

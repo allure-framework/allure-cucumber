@@ -59,9 +59,10 @@ module Allure
     # @return [void]
     def on_test_case_finished(event)
       failure_details = AllureCucumberModel.failure_details(event.result)
+      status = ALLURE_STATUS.fetch(event.result.to_sym, Status::BROKEN)
       lifecycle.update_test_case do |test_case|
         test_case.stage = Stage::FINISHED
-        test_case.status = ALLURE_STATUS.fetch(event.result.to_sym, Status::BROKEN)
+        test_case.status = event.result.failed? ? Allure::ResultUtils.status(event.result&.exception) : status
         test_case.status_details.flaky = event.result.flaky?
         test_case.status_details.message = failure_details[:message]
         test_case.status_details.trace = failure_details[:trace]

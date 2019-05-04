@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe Allure::CucumberFormatter do
+describe "CucumberFormatter.on_test_case_finished" do
   include_context "allure mock"
   include_context "cucumber runner"
 
@@ -31,13 +31,27 @@ describe Allure::CucumberFormatter do
   end
 
   it "correctly updates failed test case" do
-    run_cucumber_cli("features/features/exception.feature")
+    run_cucumber_cli("features/features/exception.feature", "--tags", "@failed")
 
     expect(lifecycle).to have_received(:update_test_case).with(no_args) do |&arg|
       arg.call(@test_case)
       aggregate_failures "Should update correct test case parameters" do
         expect(@test_case.stage).to eq(Allure::Stage::FINISHED)
         expect(@test_case.status).to eq(Allure::Status::FAILED)
+        expect(@test_case.status_details.message).to include("expected: 16", "got: 15")
+        expect(@test_case.status_details.trace).not_to be_empty
+      end
+    end
+  end
+
+  it "correctly updates broken test case" do
+    run_cucumber_cli("features/features/exception.feature", "--tags", "@broken")
+
+    expect(lifecycle).to have_received(:update_test_case).with(no_args) do |&arg|
+      arg.call(@test_case)
+      aggregate_failures "Should update correct test case parameters" do
+        expect(@test_case.stage).to eq(Allure::Stage::FINISHED)
+        expect(@test_case.status).to eq(Allure::Status::BROKEN)
         expect(@test_case.status_details.message).to eq("Simple error!")
         expect(@test_case.status_details.trace).not_to be_empty
       end
