@@ -9,6 +9,7 @@ require_relative "ast_transformer"
 require_relative "tag_parser"
 
 module Allure
+  # Support class for transforming cucumber test entities in to allure model entities
   class AllureCucumberModel
     extend AstTransformer
     extend TagParser
@@ -67,6 +68,8 @@ module Allure
         Allure.lifecycle
       end
 
+      # @param [Cucumber::Core::Test::Case] test_case
+      # @return [Array<Allure::Label>]
       def labels(test_case)
         labels = []
         labels << ResultUtils.feature_label(test_case.feature.name)
@@ -82,21 +85,29 @@ module Allure
         labels
       end
 
+      # @param [Cucumber::Core::Test::Case] test_case
+      # @return [Array<Allure::Link>]
       def links(test_case)
         return [] unless test_case.tags
 
         tms_links(test_case.tags) + issue_links(test_case.tags)
       end
 
+      # @param [Cucumber::Core::Test::Case] test_case
+      # @return [Array<Allure::Parameter>]
       def parameters(test_case)
         example_row(test_case)&.values&.map { |value| Parameter.new("argument", value) }
       end
 
+      # @param [Cucumber::Core::Test::Case] test_case
+      # @return [String]
       def description(test_case)
         scenario = scenario(test_case)
         scenario.description.empty? ? "Location - #{scenario.file_colon_line}" : scenario.description.strip
       end
 
+      # @param [Cucumber::Core::Test::Step] test_step
+      # @return [Allure::Attachment]
       def multiline_arg_attachment(test_step)
         arg = multiline_arg(test_step)
         return unless arg
@@ -104,6 +115,8 @@ module Allure
         arg.data_table? ? data_table_attachment(arg) : docstring_attachment(arg)
       end
 
+      # @param [Cucumber::Core::Ast::DataTable] multiline_arg
+      # @return [Allure::Attachment]
       def data_table_attachment(multiline_arg)
         attachment = lifecycle.prepare_attachment("data-table", ContentType::CSV)
         csv = multiline_arg.raw.each_with_object([]) { |row, arr| arr.push(row.to_csv) }.join("")
@@ -111,6 +124,8 @@ module Allure
         attachment
       end
 
+      # @param [String] multiline_arg
+      # @return [String]
       def docstring_attachment(multiline_arg)
         attachment = lifecycle.prepare_attachment("docstring", ContentType::TXT)
         lifecycle.write_attachment(multiline_arg.content, attachment)

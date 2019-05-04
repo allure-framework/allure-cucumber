@@ -3,6 +3,7 @@
 require_relative "cucumber_model"
 
 module Allure
+  # Main formatter class. Translates cucumber event to allure lifecycle
   class CucumberFormatter
     HOOK_HANDLERS = {
       "Before hook" => :start_prepare_fixture,
@@ -79,18 +80,26 @@ module Allure
       Allure.lifecycle
     end
 
+    # @param [Cucumber::Core::Test::Step] test_step <description>
+    # @return [Boolean]
     def hook?(test_step)
       HOOK_HANDLERS.key?(test_step.text)
     end
 
+    # @param [Cucumber::Core::Test::Step] test_step
+    # @return [Boolean]
     def prepare_world_hook?(test_step)
       hook?(test_step) && test_step.inspect.include?("prepare_world.rb")
     end
 
+    # @param [Cucumber::Core::Test::Step] test_step
+    # @return [void]
     def handle_step_started(test_step)
       lifecycle.start_test_step(AllureCucumberModel.step_result(test_step))
     end
 
+    # @param [Cucumber::Core::Test::Step] test_step
+    # @return [void]
     def handle_hook_started(test_step)
       return if prepare_world_hook?(test_step)
 

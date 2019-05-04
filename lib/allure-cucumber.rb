@@ -15,9 +15,8 @@ module Allure
     end
 
     # Set allure configuration
-    # @yield [config]
-    #
     # @yieldparam [Allure::CucumberConfig]
+    # @yieldreturn [void]
     # @return [void]
     def configure
       yield(CucumberConfig)

@@ -4,12 +4,16 @@ require_relative "config"
 
 module Allure
   module TagParser
+    # @param [Cucumber::Core::Ast::Tag] tags
+    # @return [Array<Allure::Label>]
     def tag_labels(tags)
       tags
         .reject { |tag| reserved?(tag.name) }
         .map { |tag| ResultUtils.tag_label(tag.name.delete_prefix("@")) }
     end
 
+    # @param [Cucumber::Core::Ast::Tag] tags
+    # @return [Array<Allure::Link>]
     def tms_links(tags)
       return [] unless CucumberConfig.tms_link_pattern
 
@@ -19,6 +23,8 @@ module Allure
         .map { |tag| tag.name.match(tms_pattern) { |match| ResultUtils.tms_link(match[:tms]) } }
     end
 
+    # @param [Cucumber::Core::Ast::Tag] tags
+    # @return [Array<Allure::Link>]
     def issue_links(tags)
       return [] unless CucumberConfig.issue_link_pattern
 
@@ -28,6 +34,8 @@ module Allure
         .map { |tag| tag.name.match(issue_pattern) { |match| ResultUtils.issue_link(match[:issue]) } }
     end
 
+    # @param [Cucumber::Core::Ast::Tag] tags
+    # @return [Allure::Label]
     def severity(tags)
       severity_pattern = reserved_patterns[:severity]
       severity = tags
@@ -37,6 +45,8 @@ module Allure
       ResultUtils.severity_label(severity)
     end
 
+    # @param [Cucumber::Core::Ast::Tag] tags
+    # @return [Hash<Symbol, Boolean>]
     def status_detail_tags(tags)
       {
         flaky: tags.any? { |tag| tag.match?(reserved_patterns[:flaky]) },
@@ -47,6 +57,7 @@ module Allure
 
     private
 
+    # @return [Hash<Symbol, Regexp>] <description>
     def reserved_patterns
       @reserved_patterns ||= {
         tms: /@#{CucumberConfig.tms_prefix}(?<tms>\S+)/,
@@ -58,6 +69,8 @@ module Allure
       }
     end
 
+    # @param [String] tag
+    # @return [Boolean]
     def reserved?(tag)
       reserved_patterns.values.any? { |pattern| tag.match?(pattern) }
     end
