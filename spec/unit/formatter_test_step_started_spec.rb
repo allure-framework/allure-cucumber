@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../spec_helper"
-
 describe "CucumberFormatter.on_test_step_started" do
   include_context "allure mock"
   include_context "cucumber runner"
