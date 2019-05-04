@@ -3,49 +3,44 @@
 require_relative "../spec_helper"
 
 describe Allure::CucumberFormatter do
-  let(:lifecycle) { double("lifecycle") }
+  include_context "allure mock"
+  include_context "cucumber runner"
 
   before do
-    allow(Allure).to receive(:lifecycle).and_return(lifecycle)
-    allow(lifecycle).to receive(:start_test_container)
-    allow(lifecycle).to receive(:start_test_case)
-    allow(lifecycle).to receive(:start_test_step)
-    allow(lifecycle).to receive(:update_test_step)
-    allow(lifecycle).to receive(:stop_test_step)
-    allow(lifecycle).to receive(:update_test_case)
+    @test_case = Allure::TestResult.new
   end
 
   it "stops test container and test case" do
-    expect(lifecycle).to receive(:stop_test_case).once
-    expect(lifecycle).to receive(:stop_test_container).once
-
     run_cucumber_cli("features/features/simple.feature")
+
+    expect(lifecycle).to have_received(:stop_test_case).with(no_args).once
+    expect(lifecycle).to have_received(:stop_test_container).once
   end
 
   it "correctly updates passed test case" do
-    test_case = double("test_case")
-    allow(lifecycle).to receive(:stop_test_case)
-    allow(lifecycle).to receive(:stop_test_container)
-
-    expect(lifecycle).to receive(:update_test_case).and_yield(test_case)
-    expect(test_case).to receive(:stage=).with(Allure::Stage::FINISHED)
-    expect(test_case).to receive(:status=).with(Allure::Status::PASSED)
-    expect(test_case).to receive(:status_details=).with(Allure::StatusDetails.new)
     run_cucumber_cli("features/features/simple.feature")
+
+    expect(lifecycle).to have_received(:update_test_case).with(no_args).once do |&arg|
+      arg.call(@test_case)
+      aggregate_failures "Should update correct test case parameters" do
+        expect(@test_case.stage).to eq(Allure::Stage::FINISHED)
+        expect(@test_case.status).to eq(Allure::Status::PASSED)
+        expect(@test_case.status_details).to eq(Allure::StatusDetails.new)
+      end
+    end
   end
 
   it "correctly updates failed test case" do
-    test_case = double("test_case")
-    allow(lifecycle).to receive(:stop_test_case)
-    allow(lifecycle).to receive(:stop_test_container)
-
-    expect(lifecycle).to receive(:update_test_case).and_yield(test_case)
-    expect(test_case).to receive(:stage=).with(Allure::Stage::FINISHED)
-    expect(test_case).to receive(:status=).with(Allure::Status::FAILED)
-    expect(test_case).to receive(:status_details=) do |status_detail|
-      expect(status_detail.message).to eq("Simple error!")
-      expect(status_detail.trace).not_to be_empty
-    end
     run_cucumber_cli("features/features/exception.feature")
+
+    expect(lifecycle).to have_received(:update_test_case).with(no_args) do |&arg|
+      arg.call(@test_case)
+      aggregate_failures "Should update correct test case parameters" do
+        expect(@test_case.stage).to eq(Allure::Stage::FINISHED)
+        expect(@test_case.status).to eq(Allure::Status::FAILED)
+        expect(@test_case.status_details.message).to eq("Simple error!")
+        expect(@test_case.status_details.trace).not_to be_empty
+      end
+    end
   end
 end

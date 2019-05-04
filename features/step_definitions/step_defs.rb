@@ -4,8 +4,17 @@ Given("a is {int}") do |num|
   @a = num
 end
 
+Given("step has a table") do |table|
+end
+
+Given("step has a docstring") do |string|
+end
+
 And("b is {int}") do |num|
   @b = num
+end
+
+And("this step shoud be skipped") do
 end
 
 When("I add a to b") do

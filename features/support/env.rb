@@ -5,10 +5,16 @@ require "cucumber/core"
 require "allure-cucumber"
 
 Allure.configure do |config|
-  config.output_dir = "allure-results"
   config.tms_link_pattern = "http://www.jira.com/tms/{}"
   config.issue_link_pattern = "http://www.jira.com/issue/{}"
 end
 
-Before("@before_hook") do
+Before("@before") do
+end
+
+Before("@broken_hook") do
+  raise Exception.new("Broken hook!")
+end
+
+After("@after") do
 end

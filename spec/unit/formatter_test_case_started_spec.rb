@@ -3,35 +3,25 @@
 require_relative "../spec_helper"
 
 describe Allure::CucumberFormatter do
+  include_context "allure mock"
+  include_context "cucumber runner"
+
   let(:result_utils) { Allure::ResultUtils }
 
-  let(:lifecycle) { double("lifecycle") }
-  let(:feature) { "Simple feature" }
-  let(:scenario) { "Add a to b" }
-
-  before do
-    allow(Allure).to receive(:lifecycle).and_return(lifecycle)
-    allow(lifecycle).to receive(:start_test_step)
-    allow(lifecycle).to receive(:update_test_step)
-    allow(lifecycle).to receive(:stop_test_step)
-    allow(lifecycle).to receive(:update_test_case)
-    allow(lifecycle).to receive(:stop_test_case)
-    allow(lifecycle).to receive(:stop_test_container)
-  end
-
   it "starts test container with correct arguments" do
-    allow(lifecycle).to receive(:start_test_case)
-
-    expect(lifecycle).to receive(:start_test_container) do |arg|
-      expect(arg.name).to eq(scenario)
-    end
     run_cucumber_cli("features/features/simple.feature")
+
+    expect(lifecycle).to have_received(:start_test_container).once do |arg|
+      expect(arg.name).to eq("Add a to b")
+    end
   end
 
   it "starts test case with correct arguments" do
-    allow(lifecycle).to receive(:start_test_container)
+    run_cucumber_cli("features/features/simple.feature")
 
-    expect(lifecycle).to receive(:start_test_case) do |arg|
+    feature = "Simple feature"
+    scenario = "Add a to b"
+    expect(lifecycle).to have_received(:start_test_case).once do |arg|
       aggregate_failures "Should have correct args" do
         expect(arg.name).to eq(scenario)
         expect(arg.description).to eq("Simple scenario description")
@@ -47,13 +37,12 @@ describe Allure::CucumberFormatter do
         )
       end
     end
-    run_cucumber_cli("features/features/simple.feature")
   end
 
   it "parses tags correctly" do
-    allow(lifecycle).to receive(:start_test_container)
+    run_cucumber_cli("features/features/tags.feature")
 
-    expect(lifecycle).to receive(:start_test_case) do |arg|
+    expect(lifecycle).to have_received(:start_test_case).once do |arg|
       aggregate_failures "Should have correct args" do
         expect(arg.links).to contain_exactly(
           result_utils.tms_link("OAT-4444"),
@@ -67,28 +56,30 @@ describe Allure::CucumberFormatter do
         )
       end
     end
-    run_cucumber_cli("features/features/tags.feature")
   end
 
   it "handles scenario outlines" do
-    allow(lifecycle).to receive(:start_test_container)
+    run_cucumber_cli("features/features/outline.feature")
 
-    expect(lifecycle).to receive(:start_test_case).once do |arg|
-      expect(arg.name).to include("Add a to b, Examples (#1)")
-      expect(arg.parameters).to contain_exactly(
+    examples = []
+    expect(lifecycle).to have_received(:start_test_container).twice
+    expect(lifecycle).to have_received(:start_test_case).twice do |arg|
+      examples.push(arg)
+    end
+
+    aggregate_failures "Should save scenario outlines with correct parameters" do
+      expect(examples[0].name).to include("Add a to b, Examples (#1)")
+      expect(examples[1].name).to include("Add a to b, Examples (#2)")
+      expect(examples[0].parameters).to contain_exactly(
         Allure::Parameter.new("argument", "5"),
         Allure::Parameter.new("argument", "10"),
         Allure::Parameter.new("argument", "15"),
       )
-    end.ordered
-    expect(lifecycle).to receive(:start_test_case).once do |arg|
-      expect(arg.name).to include("Add a to b, Examples (#2)")
-      expect(arg.parameters).to contain_exactly(
+      expect(examples[1].parameters).to contain_exactly(
         Allure::Parameter.new("argument", "6"),
         Allure::Parameter.new("argument", "7"),
         Allure::Parameter.new("argument", "13"),
       )
-    end.ordered
-    run_cucumber_cli("features/features/outline.feature")
+    end
   end
 end

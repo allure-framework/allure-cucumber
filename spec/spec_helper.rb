@@ -5,15 +5,26 @@ require "cucumber"
 require "allure-ruby-commons"
 require "allure-cucumber"
 require "digest"
-require "pry"
 
-def run_cucumber_cli(feature)
-  configuration = Cucumber::Cli::Configuration.new.tap do |config|
-    config.parse!([feature, "--format", "Allure::CucumberFormatter"])
-  end
-  runtime = Cucumber::Runtime.new.tap do |run|
-    run.configure(configuration)
-  end
+RSpec.shared_context("allure mock") do
+  let(:lifecycle) { spy("lifecycle") }
 
-  runtime.run!
+  before do
+    allow(Allure).to receive(:lifecycle).and_return(lifecycle)
+  end
+end
+
+RSpec.shared_context("cucumber runner") do
+  def run_cucumber_cli(feature, tags = nil)
+    configuration = Cucumber::Cli::Configuration.new.tap do |config|
+      args = [feature, "--format", "Allure::CucumberFormatter"]
+      args.push("--tags", tags) if tags
+      config.parse!(args)
+    end
+    runtime = Cucumber::Runtime.new.tap do |run|
+      run.configure(configuration)
+    end
+
+    runtime.run!
+  end
 end
