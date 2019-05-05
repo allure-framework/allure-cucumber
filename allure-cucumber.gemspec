@@ -5,8 +5,8 @@ require File.expand_path("lib/allure_cucumber/version", __dir__)
 Gem::Specification.new do |spec|
   spec.name = "allure-cucumber"
   spec.version = Allure::AllureCucumber::Version::STRING
-  spec.authors = ["Andrejs Cunskis"]
-  spec.email = ["andrejs.cunskis@gmail.com"]
+  spec.authors = ["Andrejs Cunskis", "Imran Khan"]
+  spec.email = ["andrejs.cunskis@gmail.com", "9ikhan@gmail.com"]
   spec.summary = "allure_cucumber:#{Allure::AllureCucumber::Version::STRING}"
   spec.description = %(Adaptor to use Allure framework with cucumber)
   spec.homepage = "http://allure.qatools.ru"

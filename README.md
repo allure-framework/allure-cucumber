@@ -21,28 +21,20 @@ $ gem install allure-cucumber
 
 ## Configuration
 
-By default, Allure XML files are stored in `gen/allure-results`. To change this add the following in `features/support/env.rb` file:
+By default, Allure json files are stored in `reports/allure-results`. To change this add the following in `features/support/env.rb` file:
 
 ```ruby
-AllureCucumber.configure do |c|
+Allure.configure do |c|
    c.output_dir = "/output/dir"
 end
 ```
 
-By default, the Allure XML files from earlier runs are deleted at the start of new run. This can be disabled by:
-
-```ruby
-AllureCucumber.configure do |c|
-  c.clean_dir  = false
-end
-```
-
-By default, allure-cucumber will analyze your cucumber tags looking for Test Management, Issue Management, and Severity hooks. These hooks will be displayed in the generated allure report (see allure-core for further info). 
+By default, allure-cucumber will analyze your cucumber tags looking for Test Management, Issue Management, and Severity hooks. Links to TMS and ISSUE and test severity will be displayed in the report. By default these prefixes are used:
 
 ```ruby    
-    DEFAULT_TMS_PREFIX      = '@TMS:'
-    DEFAULT_ISSUE_PREFIX    = '@ISSUE:'
-    DEFAULT_SEVERITY_PREFIX = '@SEVERITY:'
+    DEFAULT_TMS_PREFIX      = 'TMS:'
+    DEFAULT_ISSUE_PREFIX    = 'ISSUE:'
+    DEFAULT_SEVERITY_PREFIX = 'SEVERITY:'
 ```
 
 Example: 
@@ -53,14 +45,15 @@ Example:
     Then exactly (1) [validation_error] should be visible
 ```    
 
-You can configure what allure-cucumber looks for by making the following changes
+You can configure these prefixes as well as tms and issue tracker urls like this:
 
 ```ruby
-AllureCucumber.configure do |c|
-  c.clean_dir  = false
-  c.tms_prefix      = '@HIPTEST--'
-  c.issue_prefix    = '@JIRA++'
-  c.severity_prefix = '@URGENCY:'
+Allure.configure do |c|
+  c.tms_link_pattern = "http://www.hiptest.com/tms/{}"
+  c.issue_link_pattern = "http://www.jira.com/browse/{}"
+  c.tms_prefix      = 'HIPTEST--'
+  c.issue_prefix    = 'JIRA++'
+  c.severity_prefix = 'URGENCY:'
 end
 ```
 
@@ -72,18 +65,7 @@ Example:
     Then exactly (1) [validation_error] should be visible
 ```    
 
-### Compatability with Cucumber ~> 3
-Add the following in `features/support/env.rb` file:
-```ruby
-Cucumber::Core::Test::Step.module_eval do
-  def name
-    return text if self.text == 'Before hook'
-    return text if self.text == 'After hook'
-    "#{source.last.keyword}#{text}"
-  end
-end
-```
-More information in [issue 63](https://github.com/allure-framework/allure-cucumber/issues/63)
+Additional special tags exists for setting status detail of test scenarios, allure will pick up following tags: `@flaky`, `@known` and `@muted`
 
 ## Usage
 
@@ -93,17 +75,18 @@ Put the following in your `features/support/env.rb` file:
 require 'allure-cucumber'
 ```
 
-Use `--format AllureCucumber::Formatter --out where/you-want-results` while running cucumber or add it to `cucumber.yml`
+Use `--format Allure::CucumberFormatter --out where/you-want-results` while running cucumber or add it to `cucumber.yml`
 
-You can also [attach screenshots](https://github.com/allure-framework/allure-core/wiki/Glossary#attachment), logs or test data to [steps](https://github.com/allure-framework/allure-core/wiki/Glossary#test-step).
+You can also manually attach screenshots and links to test steps and test cases by interacting with allure lifecycle directly. For more info check out `allure-ruby-commons`
 
 ```ruby
 # file: features/support/env.rb
 
-include AllureCucumber::DSL
+require "allure-cucumber"
 
-attach_file(title, file)
+Allure.add_attachment(name: "attachment", source: "Some string", type: Allure::ContentType::TXT, test_case: true)
+Allure.add_link("Custom Url", "http://www.github.com")
 ```
 
 ## How to generate report
-This adapter only generates XML files containing information about tests. See [wiki section](https://github.com/allure-framework/allure-core/wiki#generating-report) on how to generate report.
+This adapter only generates json files containing information about tests. See [wiki section](https://docs.qameta.io/allure/#_reporting) on how to generate report.
