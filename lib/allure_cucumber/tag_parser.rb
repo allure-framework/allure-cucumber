@@ -15,7 +15,7 @@ module Allure
     # @param [Cucumber::Core::Ast::Tag] tags
     # @return [Array<Allure::Link>]
     def tms_links(tags)
-      return [] unless CucumberConfig.tms_link_pattern
+      return [] unless CucumberConfig.link_tms_pattern
 
       tms_pattern = reserved_patterns[:tms]
       tags
@@ -26,7 +26,7 @@ module Allure
     # @param [Cucumber::Core::Ast::Tag] tags
     # @return [Array<Allure::Link>]
     def issue_links(tags)
-      return [] unless CucumberConfig.issue_link_pattern
+      return [] unless CucumberConfig.link_issue_pattern
 
       issue_pattern = reserved_patterns[:issue]
       tags

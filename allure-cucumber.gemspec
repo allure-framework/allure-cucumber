@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "allure-ruby-commons", "~> 2.10.0.beta1"
 
   spec.add_development_dependency "bundler", "~> 2.0"
-  spec.add_development_dependency "rubocop", "~> 0.67"
+  spec.add_development_dependency "rubocop", "~> 0.69"
   spec.add_development_dependency "rubocop-performance", "~> 1.1"
   spec.add_development_dependency "pry", "~> 0.12"
   spec.add_development_dependency "solargraph", "~> 0.32"

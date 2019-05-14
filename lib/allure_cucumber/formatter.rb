@@ -17,7 +17,7 @@ module Allure
 
     # @param [Cucumber::Configuration] config
     def initialize(config)
-      Allure::Config.output_dir = config.out_stream if config.out_stream.is_a?(String)
+      Allure::Config.results_directory = config.out_stream if config.out_stream.is_a?(String)
       config.on_event(:test_case_started, &method(:on_test_case_started))
       config.on_event(:test_step_started, &method(:on_test_step_started))
       config.on_event(:test_step_finished, &method(:on_test_step_finished))

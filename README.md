@@ -25,7 +25,7 @@ By default, Allure json files are stored in `reports/allure-results`. To change 
 
 ```ruby
 Allure.configure do |c|
-   c.output_dir = "/output/dir"
+   c.results_directory = "/output/dir"
 end
 ```
 
@@ -49,8 +49,8 @@ You can configure these prefixes as well as tms and issue tracker urls like this
 
 ```ruby
 Allure.configure do |c|
-  c.tms_link_pattern = "http://www.hiptest.com/tms/{}"
-  c.issue_link_pattern = "http://www.jira.com/browse/{}"
+  c.link_tms_pattern = "http://www.hiptest.com/tms/{}"
+  c.link_issue_pattern = "http://www.jira.com/browse/{}"
   c.tms_prefix      = 'HIPTEST--'
   c.issue_prefix    = 'JIRA++'
   c.severity_prefix = 'URGENCY:'

@@ -188,6 +188,10 @@ Layout/ExtraSpacing:
   AllowForAlignment: false
   ForceEqualSignAlignment: false
 
+Layout/IndentFirstArrayElement:
+  Enabled: true
+  EnforcedStyle: consistent
+
 Layout/FirstArrayElementLineBreak:
   Enabled: true
 
@@ -200,24 +204,20 @@ Layout/FirstMethodArgumentLineBreak:
 Layout/FirstMethodParameterLineBreak:
   Enabled: false
 
-Layout/FirstParameterIndentation:
-  Enabled: true
-  EnforcedStyle: consistent
-
-Layout/IndentArray:
-  Enabled: true
-  EnforcedStyle: consistent
-
 Layout/IndentAssignment:
   Enabled: true
 
-Layout/IndentHash:
+Layout/IndentFirstArgument:
+  Enabled: true
+  EnforcedStyle: consistent
+
+Layout/IndentFirstHashElement:
   Enabled: true
   EnforcedStyle: consistent
 
 Layout/IndentHeredoc:
   Enabled: true
-  EnforcedStyle: auto_detection
+  EnforcedStyle: squiggly
 
 Layout/IndentationConsistency:
   Enabled: true
@@ -1021,7 +1021,7 @@ Style/FormatStringToken:
 
 Style/FrozenStringLiteralComment:
   Enabled: true
-  EnforcedStyle: when_needed
+  EnforcedStyle: always
 
 Style/GlobalVars:
   Enabled: true

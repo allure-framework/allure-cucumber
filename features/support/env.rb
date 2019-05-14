@@ -5,8 +5,8 @@ require "cucumber/core"
 require "allure-cucumber"
 
 Allure.configure do |config|
-  config.tms_link_pattern = "http://www.jira.com/tms/{}"
-  config.issue_link_pattern = "http://www.jira.com/issue/{}"
+  config.link_tms_pattern = "http://www.jira.com/tms/{}"
+  config.link_issue_pattern = "http://www.jira.com/issue/{}"
 end
 
 Before("@before") do
