@@ -1,9 +1,7 @@
 # [DEPRECATED]
 ## Please follow https://github.com/allure-framework/allure-ruby
-Allure Cucumber-JVM Adaptor
+Allure Cucumber Adaptor
 =====================
-
-# Allure Cucumber Adaptor
 
 This repository contains Allure adaptor for [Cucumber](http://cukes.info/) framework.
 
