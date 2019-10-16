@@ -1,4 +1,4 @@
-# [DEPRICATED]
+# [DEPRECATED]
 ## Please follow https://github.com/allure-framework/allure-ruby
 Allure Cucumber-JVM Adaptor
 =====================
